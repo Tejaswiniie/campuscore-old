@@ -1,13 +1,22 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Admin Dashboard</title>
-<link rel="stylesheet" th:href="@{/style.css}"></head>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Console</title>
+<link rel="stylesheet" th:href="@{/admin.css}"></head>
 <body>
-<header><strong>CampusCore - Admin</strong>
-  <form th:action="@{/logout}" method="post"><button>Logout</button></form></header>
-<main>
-  <div class="card"><h3>Welcome, <span th:text="${name}">admin</span></h3></div>
-  <div class="card"><h4>Student records</h4><p>Add and edit students here.</p></div>
-  <div class="card"><h4>Faculty records</h4><p>Add and edit faculty here.</p></div>
+<header class="topbar"><div class="topbar-in">
+  <a class="brand" th:href="@{/admin}"><span class="mark">C</span><span>CampusCore <b>Admin Console</b><small>(v5)</small></span></a>
+  <nav><a th:href="@{/admin}" class="active">Dashboard</a><a th:href="@{/admin/students}">Students</a><a th:href="@{/admin/faculty}">Faculty</a></nav>
+  <div class="who"><span th:text="${id}">admin</span>
+    <form th:action="@{/admin/logout}" method="post"><button class="btn-out" type="submit">Log out</button></form></div>
+</div></header>
+<main class="wrap">
+  <div class="head"><h1>Dashboard</h1><p>All student and faculty records are created and changed here.</p></div>
+  <div class="stats">
+    <a class="stat" th:href="@{/admin/students}"><div class="n" th:text="${studentCount}">0</div>
+      <div class="l">Students registered</div><div class="go">Manage students</div></a>
+    <a class="stat" th:href="@{/admin/faculty}"><div class="n" th:text="${facultyCount}">0</div>
+      <div class="l">Faculty registered</div><div class="go">Manage faculty</div></a>
+  </div>
 </main>
 </body></html>

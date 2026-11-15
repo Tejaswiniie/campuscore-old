@@ -1,22 +1,49 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Student Dashboard</title>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Dashboard</title>
 <link rel="stylesheet" th:href="@{/style.css}"></head>
 <body>
-<header><strong>CampusCore - Student (v2)</strong>
-  <form th:action="@{/logout}" method="post"><button>Logout</button></form></header>
-<main>
-  <div class="card"><h3>Welcome, <span th:text="${name}">student</span></h3>
-    <p>Roll number: <span th:text="${name}"></span></p></div>
-  <div class="card row">
-    <div class="item"><h4>Attendance</h4>
-      <div class="circle" th:classappend="${zone}" th:style="'--p:' + ${attendance}">
-        <span th:text="${#numbers.formatDecimal(attendance,1,0)} + '%'">0%</span></div>
-      <p th:text="${zone} + ' zone'"></p></div>
-    <div class="item"><h4>CGPA</h4>
-      <div class="circle blue" th:style="'--p:' + ${cgpaPercent}">
-        <span th:text="${cgpa}">0</span></div>
-      <p>out of 10</p></div>
-  </div>
-</main>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="logo">C</span>
+      <div><strong>CampusCore</strong><small>Student portal (v5)</small></div></div>
+    <nav><a class="active" th:href="@{/student}">Dashboard</a></nav>
+    <div class="side-foot">
+      <div class="user"><span class="avatar" th:text="${#strings.toUpperCase(#strings.substring(id,0,1))}">U</span>
+        <div><b th:text="${displayName}">User</b><small th:text="${id}">ID</small></div></div>
+      <form th:action="@{/logout}" method="post"><button class="btn-ghost" type="submit">Log out</button></form>
+    </div>
+  </aside>
+  <main class="content">
+    <div class="page-head"><h1>Welcome, <span th:text="${displayName}">student</span></h1>
+      <p>Your attendance and academic standing at a glance.</p></div>
+    <div class="card">
+      <h2>Profile</h2>
+      <dl class="facts">
+        <div><dt>Roll number</dt><dd th:text="${id}"></dd></div>
+        <div><dt>Department</dt><dd th:text="${student.department}"></dd></div>
+        <div><dt>Year</dt><dd th:text="${student.yearOfStudy}"></dd></div>
+        <div><dt>Section</dt><dd th:text="${student.section}"></dd></div>
+        <div><dt>Date of birth</dt><dd th:text="${student.dob}"></dd></div>
+      </dl>
+    </div>
+    <div class="card">
+      <div class="gauges">
+        <div class="gauge-item"><h3>Attendance</h3>
+          <div class="circle" th:classappend="${zone}" th:style="'--p:' + ${attendance}">
+            <span th:text="${#numbers.formatDecimal(attendance,1,0)} + '%'">0%</span></div>
+          <span class="pill" th:classappend="${zone}"
+                th:text="${zone == 'green' ? 'Good standing' : (zone == 'orange' ? 'Needs attention' : 'Below required level')}">Status</span>
+          <p class="hint">75% and above is green, 60 to 74% is orange, below 60% is red.</p></div>
+        <div class="gauge-item"><h3>CGPA</h3>
+          <div class="circle" th:classappend="${cgpaZone}" th:style="'--p:' + ${cgpaPercent}">
+            <span th:text="${#numbers.formatDecimal(cgpa,1,2)}">0</span></div>
+          <span class="pill" th:classappend="${cgpaZone}"
+                th:text="${cgpaZone == 'green' ? 'Strong' : (cgpaZone == 'orange' ? 'Satisfactory' : 'Needs improvement')}">Status</span>
+          <p class="hint">Out of 10. 8 and above is green, 6 to 8 is orange, below 6 is red.</p></div>
+      </div>
+    </div>
+  </main>
+</div>
 </body></html>

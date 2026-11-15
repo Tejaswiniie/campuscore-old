@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CampusCore - Administrator sign in</title>
+<link rel="stylesheet" th:href="@{/admin.css}"></head>
+<body>
+<div class="signin">
+  <div class="signin-box">
+    <span class="mark">C</span>
+    <h1>Administrator sign in</h1>
+    <p class="sub">CampusCore Admin Console. Authorised staff only.</p>
+    <p class="notice error" th:if="${param.error}">The admin ID or password is not correct.</p>
+    <p class="notice ok" th:if="${param.logout}">You have been signed out.</p>
+    <form th:action="@{/admin/login}" method="post">
+      <label for="username">Admin ID</label>
+      <input id="username" type="text" name="username" required autofocus autocomplete="username">
+      <label for="password">Password</label>
+      <input id="password" type="password" name="password" required autocomplete="current-password">
+      <button class="btn" type="submit">Sign in</button>
+    </form>
+    <p class="alt">Student or faculty? <a th:href="@{/login}">Use the portal sign in</a></p>
+  </div>
+</div>
+</body></html>

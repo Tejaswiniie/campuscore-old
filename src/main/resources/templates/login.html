@@ -1,17 +1,30 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>CampusCore Login</title>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CampusCore - Sign in</title>
 <link rel="stylesheet" th:href="@{/style.css}"></head>
 <body>
-<div class="card login">
-  <h2>CampusCore</h2>
-  <p class="error" th:if="${param.error}">Wrong ID or password.</p>
-  <form th:action="@{/login}" method="post">
-    <label>ID (roll number, faculty ID or admin)</label>
-    <input type="text" name="username" required autofocus>
-    <label>Password</label>
-    <input type="password" name="password" required>
-    <button type="submit">Login</button>
-  </form>
+<div class="login-page">
+  <section class="login-art">
+    <span class="logo">C</span>
+    <div><h1>One place for students, faculty and administration.</h1>
+      <p>Check attendance and results, manage classes, and keep college records in order.</p></div>
+    <small>CampusCore college management system</small>
+  </section>
+  <section class="login-form">
+    <div class="login-box">
+      <h2>Sign in</h2>
+      <p class="sub">Use your roll number, faculty ID or admin ID.</p>
+      <p class="notice error" th:if="${param.error}">The ID or password is not correct.</p>
+      <p class="notice ok" th:if="${param.logout}">You have been signed out.</p>
+      <form th:action="@{/login}" method="post">
+        <label for="username">ID</label>
+        <input id="username" type="text" name="username" required autofocus autocomplete="username">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" required autocomplete="current-password">
+        <button class="btn" type="submit">Sign in</button>
+      </form>
+    </div>
+  </section>
 </div>
 </body></html>

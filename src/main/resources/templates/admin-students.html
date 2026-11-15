@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin - Students</title>
+<link rel="stylesheet" th:href="@{/admin.css}"></head>
+<body>
+<header class="topbar"><div class="topbar-in">
+  <a class="brand" th:href="@{/admin}"><span class="mark">C</span><span>CampusCore <b>Admin Console</b><small>(v5)</small></span></a>
+  <nav><a th:href="@{/admin}">Dashboard</a><a th:href="@{/admin/students}" class="active">Students</a><a th:href="@{/admin/faculty}">Faculty</a></nav>
+  <div class="who"><span th:text="${id}">admin</span>
+    <form th:action="@{/admin/logout}" method="post"><button class="btn-out" type="submit">Log out</button></form></div>
+</div></header>
+<main class="wrap">
+  <div class="head"><h1>Students</h1><p>The roll number is the student's login ID and first password.</p></div>
+  <div class="panel">
+    <h2>Add student</h2>
+    <p class="notice ok" th:if="${message}" th:text="${message}"></p>
+    <p class="notice error" th:if="${error}" th:text="${error}"></p>
+    <form th:action="@{/admin/students}" th:object="${student}" method="post" class="form">
+      <div><label for="rollNo">Roll number</label><input id="rollNo" type="text" th:field="*{rollNo}" required></div>
+      <div class="span2"><label for="name">Full name</label><input id="name" type="text" th:field="*{name}" required></div>
+      <div><label for="dob">Date of birth</label><input id="dob" type="date" th:field="*{dob}"></div>
+      <div><label for="department">Department</label><input id="department" type="text" th:field="*{department}"></div>
+      <div><label for="yearOfStudy">Year</label><input id="yearOfStudy" type="number" min="1" max="6" th:field="*{yearOfStudy}"></div>
+      <div><label for="section">Section</label><input id="section" type="text" th:field="*{section}"></div>
+      <div><label for="attendance">Attendance (%)</label><input id="attendance" type="number" step="0.01" min="0" max="100" th:field="*{attendance}"></div>
+      <div><label for="cgpa">CGPA (out of 10)</label><input id="cgpa" type="number" step="0.01" min="0" max="10" th:field="*{cgpa}"></div>
+      <div class="full"><button class="btn" type="submit">Create student</button></div>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>All students</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Roll number</th><th>Name</th><th>Department</th><th>Year</th><th>Section</th><th>Attendance</th><th>CGPA</th></tr></thead>
+      <tbody>
+        <tr th:each="s : ${list}">
+          <td th:text="${s.rollNo}"></td><td th:text="${s.name}"></td><td th:text="${s.department}"></td>
+          <td th:text="${s.yearOfStudy}"></td><td th:text="${s.section}"></td>
+          <td th:text="${s.attendance} + '%'"></td><td th:text="${s.cgpa}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(list)}"><td class="empty" colspan="7">No students yet. Use the form above to add the first one.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</main>
+</body></html>
