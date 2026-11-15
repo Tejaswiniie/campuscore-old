@@ -8,7 +8,7 @@ pipeline {
 
   environment {
     // Jenkins on macOS often has a short PATH, so add the tool folders explicitly
-    PATH = "/usr/local/bin:/opt/homebrew/bin:/Applications/apache-maven-3.10.0/bin:${env.PATH}"
+    PATH = "/Users/heidi/.docker/bin:/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin:/opt/homebrew/bin:/Applications/apache-maven-3.10.0/bin:${env.PATH}"
     JAVA_HOME = "/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home"
     APP = "campuscore"
   }
