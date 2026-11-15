@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Admin Dashboard</title>
+<link rel="stylesheet" th:href="@{/style.css}"></head>
+<body>
+<header><strong>CampusCore - Admin</strong>
+  <form th:action="@{/logout}" method="post"><button>Logout</button></form></header>
+<main>
+  <div class="card"><h3>Welcome, <span th:text="${name}">admin</span></h3></div>
+  <div class="card"><h4>Student records</h4><p>Add and edit students here.</p></div>
+  <div class="card"><h4>Faculty records</h4><p>Add and edit faculty here.</p></div>
+</main>
+</body></html>

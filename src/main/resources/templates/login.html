@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>CampusCore Login</title>
+<link rel="stylesheet" th:href="@{/style.css}"></head>
+<body>
+<div class="card login">
+  <h2>CampusCore</h2>
+  <p class="error" th:if="${param.error}">Wrong ID or password.</p>
+  <form th:action="@{/login}" method="post">
+    <label>ID (roll number, faculty ID or admin)</label>
+    <input type="text" name="username" required autofocus>
+    <label>Password</label>
+    <input type="password" name="password" required>
+    <button type="submit">Login</button>
+  </form>
+</div>
+</body></html>

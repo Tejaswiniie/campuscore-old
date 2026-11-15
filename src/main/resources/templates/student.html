@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Student Dashboard</title>
+<link rel="stylesheet" th:href="@{/style.css}"></head>
+<body>
+<header><strong>CampusCore - Student</strong>
+  <form th:action="@{/logout}" method="post"><button>Logout</button></form></header>
+<main>
+  <div class="card"><h3>Welcome, <span th:text="${name}">student</span></h3>
+    <p>Roll number: <span th:text="${name}"></span></p></div>
+  <div class="card row">
+    <div class="item"><h4>Attendance</h4>
+      <div class="circle" th:classappend="${zone}" th:style="'--p:' + ${attendance}">
+        <span th:text="${#numbers.formatDecimal(attendance,1,0)} + '%'">0%</span></div>
+      <p th:text="${zone} + ' zone'"></p></div>
+    <div class="item"><h4>CGPA</h4>
+      <div class="circle blue" th:style="'--p:' + ${cgpaPercent}">
+        <span th:text="${cgpa}">0</span></div>
+      <p>out of 10</p></div>
+  </div>
+</main>
+</body></html>

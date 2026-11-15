@@ -1,0 +1,15 @@
+body{font-family:system-ui,sans-serif;background:#f3f4f6;margin:0;color:#111827}
+header{background:#1e3a8a;color:#fff;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
+header form{margin:0}
+button{background:#2563eb;color:#fff;border:0;padding:8px 16px;border-radius:6px;cursor:pointer}
+main{max-width:900px;margin:24px auto;padding:0 16px}
+.card{background:#fff;border-radius:10px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.row{display:flex;gap:32px;flex-wrap:wrap}
+.item{text-align:center}
+.circle{--c:#16a34a;width:140px;height:140px;border-radius:50%;display:grid;place-items:center;
+  background:conic-gradient(var(--c) calc(var(--p)*1%),#e5e7eb 0)}
+.circle span{background:#fff;width:104px;height:104px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:22px}
+.green{--c:#16a34a}.orange{--c:#f59e0b}.red{--c:#dc2626}.blue{--c:#2563eb}
+.login{max-width:340px;margin:80px auto}
+.login input{width:100%;padding:10px;margin:6px 0 14px;box-sizing:border-box}
+.error{color:#dc2626}

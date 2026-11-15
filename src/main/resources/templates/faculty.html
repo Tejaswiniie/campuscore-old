@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Faculty Dashboard</title>
+<link rel="stylesheet" th:href="@{/style.css}"></head>
+<body>
+<header><strong>CampusCore - Faculty</strong>
+  <form th:action="@{/logout}" method="post"><button>Logout</button></form></header>
+<main>
+  <div class="card"><h3>Welcome, <span th:text="${name}">faculty</span></h3></div>
+  <div class="card"><h4>My Classes</h4><p>Sections, students and results will appear here.</p></div>
+  <div class="card"><h4>Assignments</h4><p>Post assignments for a class here.</p></div>
+</main>
+</body></html>
