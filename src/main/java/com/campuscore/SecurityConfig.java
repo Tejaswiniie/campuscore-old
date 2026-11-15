@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .successHandler(adminSuccess())
                 .failureUrl("/admin/login?error")
                 .permitAll())
+            .exceptionHandling(e -> e.accessDeniedPage("/denied"))
             .logout(l -> l.logoutUrl("/admin/logout").logoutSuccessUrl("/admin/login?logout"));
         return http.build();
     }
@@ -44,7 +45,7 @@ public class SecurityConfig {
     SecurityFilterChain portalChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(a -> a
-                .requestMatchers("/login", "/style.css", "/admin.css",
+                .requestMatchers("/login", "/denied", "/error", "/style.css", "/admin.css",
                                  "/actuator/health", "/actuator/health/**").permitAll()
                 .requestMatchers("/student/**").hasRole("STUDENT")
                 .requestMatchers("/faculty/**").hasRole("FACULTY")
@@ -54,6 +55,7 @@ public class SecurityConfig {
                 .successHandler(portalSuccess())
                 .failureUrl("/login?error")
                 .permitAll())
+            .exceptionHandling(e -> e.accessDeniedPage("/denied"))
             .logout(l -> l.logoutSuccessUrl("/login?logout"));
         return http.build();
     }

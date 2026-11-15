@@ -5,9 +5,9 @@
 <link rel="stylesheet" th:href="@{/admin.css}"></head>
 <body>
 <header class="topbar"><div class="topbar-in">
-  <a class="brand" th:href="@{/admin}"><span class="mark">C</span><span>CampusCore <b>Admin Console</b><small>(v5)</small></span></a>
+  <a class="brand" th:href="@{/admin}"><span class="mark">C</span><span>CampusCore <b>Admin Console</b><small>(v7)</small></span></a>
   <nav><a th:href="@{/admin}">Dashboard</a><a th:href="@{/admin/students}">Students</a><a th:href="@{/admin/faculty}" class="active">Faculty</a></nav>
-  <div class="who"><span th:text="${id}">admin</span>
+  <div class="who"><span class="who-name" th:text="${#strings.capitalize(id)}">Admin</span>
     <form th:action="@{/admin/logout}" method="post"><button class="btn-out" type="submit">Log out</button></form></div>
 </div></header>
 <main class="wrap">
@@ -29,13 +29,16 @@
   <div class="panel">
     <h2>All faculty</h2>
     <div class="table-wrap"><table>
-      <thead><tr><th>Faculty ID</th><th>Name</th><th>Department</th><th>Designation</th><th>Qualifications</th></tr></thead>
+      <thead><tr><th>Faculty ID</th><th>Name</th><th>Department</th><th>Designation</th><th>Qualifications</th><th>Action</th></tr></thead>
       <tbody>
         <tr th:each="f : ${list}">
           <td th:text="${f.facultyId}"></td><td th:text="${f.name}"></td><td th:text="${f.department}"></td>
           <td th:text="${f.designation}"></td><td th:text="${f.qualifications}"></td>
+          <td><form class="inline" th:action="@{/admin/faculty/{id}/delete(id=${f.facultyId})}" method="post"
+                    onsubmit="return confirm('Delete this faculty member? Their login is removed too.')">
+              <button class="btn-danger" type="submit">Delete</button></form></td>
         </tr>
-        <tr th:if="${#lists.isEmpty(list)}"><td class="empty" colspan="5">No faculty yet. Use the form above to add the first one.</td></tr>
+        <tr th:if="${#lists.isEmpty(list)}"><td class="empty" colspan="6">No faculty yet. Use the form above to add the first one.</td></tr>
       </tbody>
     </table></div>
   </div>

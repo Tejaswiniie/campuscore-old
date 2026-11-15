@@ -5,9 +5,9 @@
 <link rel="stylesheet" th:href="@{/admin.css}"></head>
 <body>
 <header class="topbar"><div class="topbar-in">
-  <a class="brand" th:href="@{/admin}"><span class="mark">C</span><span>CampusCore <b>Admin Console</b><small>(v5)</small></span></a>
+  <a class="brand" th:href="@{/admin}"><span class="mark">C</span><span>CampusCore <b>Admin Console</b><small>(v7)</small></span></a>
   <nav><a th:href="@{/admin}" class="active">Dashboard</a><a th:href="@{/admin/students}">Students</a><a th:href="@{/admin/faculty}">Faculty</a></nav>
-  <div class="who"><span th:text="${id}">admin</span>
+  <div class="who"><span class="who-name" th:text="${#strings.capitalize(id)}">Admin</span>
     <form th:action="@{/admin/logout}" method="post"><button class="btn-out" type="submit">Log out</button></form></div>
 </div></header>
 <main class="wrap">

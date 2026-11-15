@@ -25,6 +25,11 @@ public class PageController {
         return "login";
     }
 
+    @GetMapping("/denied")
+    public String denied() {
+        return "denied";
+    }
+
     @GetMapping("/admin")
     public String admin(Model model, Authentication auth) {
         model.addAttribute("id", auth.getName());

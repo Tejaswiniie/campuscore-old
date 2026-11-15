@@ -54,6 +54,24 @@ public class AdminService {
         users.save(new AppUser(id, encoder.encode(id), "FACULTY"));
     }
 
+    /** Removes the student record and the matching login. Does nothing if the ID is not a student. */
+    @Transactional
+    public void deleteStudent(String rollNo) {
+        if (students.existsById(rollNo)) {
+            students.deleteById(rollNo);
+            users.deleteById(rollNo);
+        }
+    }
+
+    /** Removes the faculty record and the matching login. Does nothing if the ID is not faculty. */
+    @Transactional
+    public void deleteFaculty(String facultyId) {
+        if (faculty.existsById(facultyId)) {
+            faculty.deleteById(facultyId);
+            users.deleteById(facultyId);
+        }
+    }
+
     private static String clean(String x) {
         return x == null ? "" : x.trim();
     }

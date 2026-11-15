@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CampusCore - No access</title>
+<link rel="stylesheet" th:href="@{/style.css}"></head>
+<body>
+<div class="center-card">
+  <div class="card">
+    <h2>You do not have access to this page</h2>
+    <p class="hint">This page belongs to a different role. Use the button below to go back to your own dashboard.</p>
+    <p><a class="btn" th:href="@{/}" style="display:inline-block;text-decoration:none">Go to my dashboard</a></p>
+  </div>
+</div>
+</body></html>

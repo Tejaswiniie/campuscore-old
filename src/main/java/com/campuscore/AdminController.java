@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -87,5 +88,19 @@ public class AdminController {
     private static void sidebar(Model model, Authentication auth) {
         model.addAttribute("id", auth.getName());
         model.addAttribute("displayName", "Administrator");
+    }
+
+    @PostMapping("/students/{id}/delete")
+    public String deleteStudent(@PathVariable("id") String id, RedirectAttributes redirect) {
+        service.deleteStudent(id);
+        redirect.addFlashAttribute("message", "Student " + id + " deleted.");
+        return "redirect:/admin/students";
+    }
+
+    @PostMapping("/faculty/{id}/delete")
+    public String deleteFaculty(@PathVariable("id") String id, RedirectAttributes redirect) {
+        service.deleteFaculty(id);
+        redirect.addFlashAttribute("message", "Faculty " + id + " deleted.");
+        return "redirect:/admin/faculty";
     }
 }

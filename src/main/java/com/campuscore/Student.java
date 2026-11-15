@@ -13,7 +13,7 @@ public class Student {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dob;
     private String department;
-    private int yearOfStudy;
+    private Integer yearOfStudy;
     private String section;
     private double attendance;
     private double cgpa;
@@ -26,8 +26,8 @@ public class Student {
     public void setDob(LocalDate dob) { this.dob = dob; }
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }
-    public int getYearOfStudy() { return yearOfStudy; }
-    public void setYearOfStudy(int yearOfStudy) { this.yearOfStudy = yearOfStudy; }
+    public Integer getYearOfStudy() { return yearOfStudy; }
+    public void setYearOfStudy(Integer yearOfStudy) { this.yearOfStudy = yearOfStudy; }
     public String getSection() { return section; }
     public void setSection(String section) { this.section = section; }
     public double getAttendance() { return attendance; }

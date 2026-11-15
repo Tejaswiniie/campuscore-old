@@ -82,3 +82,8 @@ td.empty{color:var(--muted);text-align:center;padding:24px}
 }
 @media (max-width:520px){.form{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+form.inline{margin:0}
+.btn-danger{background:#fff;color:#b42318;border:1px solid #f0b4ae;padding:5px 12px;border-radius:6px;cursor:pointer;font:inherit;font-size:13.5px}
+.btn-danger:hover{background:#fee2e2}
+.who-name{font-weight:600;color:#fff}

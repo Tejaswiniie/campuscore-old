@@ -1,6 +1,7 @@
 package com.campuscore;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -57,8 +58,20 @@ class AdminServiceTest {
         assertThrows(IllegalArgumentException.class, () -> service.createStudent(student("TEST002")));
     }
 
-    @Test void seededStudentCannotBeCreatedAgain() {
-        assertThrows(IllegalArgumentException.class, () -> service.createStudent(student("22CS001")));
+    @Test void adminIdCannotBeReusedAsRollNumber() {
+        assertThrows(IllegalArgumentException.class, () -> service.createStudent(student("admin")));
+    }
+
+    @Test void deletingStudentRemovesTheLoginToo() {
+        service.createStudent(student("TEST010"));
+        service.deleteStudent("TEST010");
+        assertFalse(users.existsById("TEST010"));
+    }
+
+    @Test void deletingStudentDoesNotTouchAFacultyLogin() {
+        service.createFaculty(faculty("TESTF02"));
+        service.deleteStudent("TESTF02");
+        assertTrue(users.existsById("TESTF02"));
     }
 
     @Test void facultyIdCannotReuseAStudentRollNumber() {

@@ -123,3 +123,4 @@ td.empty{color:var(--muted);text-align:center;padding:24px}
   .login-art{padding:28px;min-height:200px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.center-card{max-width:520px;margin:14vh auto;padding:0 16px}
