@@ -5,16 +5,7 @@
 <link rel="stylesheet" th:href="@{/style.css}"></head>
 <body>
 <div class="shell">
-  <aside class="side">
-    <div class="brand"><span class="logo">C</span>
-      <div><strong>CampusCore</strong><small>Faculty portal (v7)</small></div></div>
-    <nav><a class="active" th:href="@{/faculty}">Dashboard</a></nav>
-    <div class="side-foot">
-      <div class="user"><span class="avatar" th:text="${#strings.toUpperCase(#strings.substring(id,0,1))}">U</span>
-        <div><b th:text="${displayName}">User</b><small th:text="${id}">ID</small></div></div>
-      <form th:action="@{/logout}" method="post"><button class="btn-ghost" type="submit">Log out</button></form>
-    </div>
-  </aside>
+  <aside th:replace="~{fragments :: facultySide('dashboard')}"></aside>
   <main class="content">
     <div class="page-head"><h1>Welcome, <span th:text="${displayName}">faculty</span></h1>
       <p>Your profile and classes.</p></div>
@@ -22,14 +13,25 @@
       <h2>Profile</h2>
       <dl class="facts">
         <div><dt>Faculty ID</dt><dd th:text="${id}"></dd></div>
-        <div><dt>Department</dt><dd th:text="${faculty.department}"></dd></div>
+        <div><dt>Name</dt><dd th:text="${faculty.name}"></dd></div>
+        <div><dt>Department</dt><dd th:text="${faculty.departmentName}"></dd></div>
         <div><dt>Designation</dt><dd th:text="${faculty.designation}"></dd></div>
-        <div><dt>Qualifications</dt><dd th:text="${faculty.qualifications}"></dd></div>
       </dl>
     </div>
-    <div class="grid two">
-      <div class="card"><h2>My classes</h2><p class="hint">Your sections, students and results will appear here.</p></div>
-      <div class="card"><h2>Assignments</h2><p class="hint">Assignments you post for a class will appear here.</p></div>
+    <div class="card">
+      <h2>My classes</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Subject</th><th>Year</th><th>Section</th><th>Students</th><th></th></tr></thead>
+        <tbody>
+          <tr th:each="c : ${classes}">
+            <td th:text="${c.teaching.subject.label}"></td><td th:text="${c.teaching.section.yearLabel}"></td>
+            <td th:text="${c.teaching.section.department.code} + ' ' + ${c.teaching.section.name}"></td>
+            <td th:text="${c.studentCount}"></td>
+            <td><a th:href="@{/faculty/classes/{id}(id=${c.teaching.id})}">View students</a></td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(classes)}"><td class="empty" colspan="5">No classes have been assigned to you yet. Ask the admin.</td></tr>
+        </tbody>
+      </table></div>
     </div>
   </main>
 </div>

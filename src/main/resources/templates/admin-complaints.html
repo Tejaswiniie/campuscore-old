@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin - Complaints</title>
+<link rel="stylesheet" th:href="@{/admin.css}"></head>
+<body>
+<header th:replace="~{fragments :: adminTop('complaints')}"></header>
+<main class="wrap">
+  <div class="head"><h1>Complaints</h1><p>Read student complaints, set the status and write a reply.</p></div>
+  <p class="notice ok" th:if="${message}" th:text="${message}"></p>
+  <p class="notice error" th:if="${error}" th:text="${error}"></p>
+  <div class="panel" th:each="c : ${list}">
+    <div class="entry-head"><strong>#<span th:text="${c.id}">1</span> <span th:text="${c.subject}">Subject</span></strong>
+      <span class="pill" th:classappend="${c.status == 'Resolved' ? 'green' : (c.status == 'In Review' ? 'blue' : 'orange')}" th:text="${c.status}">Submitted</span></div>
+    <div class="meta">Student <span th:text="${c.studentRoll}">Roll</span>, <span th:text="${c.category}">Category</span>, on
+      <span th:text="${#temporals.format(c.createdAt,'dd MMM yyyy, HH:mm')}">date</span></div>
+    <p class="pre" th:text="${c.description}">Description</p>
+    <form th:action="@{/admin/complaints/{id}(id=${c.id})}" method="post" class="form">
+      <div><label>Status
+        <select name="status">
+          <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == c.status}">Submitted</option>
+        </select></label></div>
+      <div class="span3"><label>Reply to the student
+        <input type="text" name="response" maxlength="1000" th:value="${c.response}"></label></div>
+      <div class="full"><button class="btn" type="submit">Save</button></div>
+    </form>
+  </div>
+  <div class="panel" th:if="${#lists.isEmpty(list)}"><p class="meta">No complaints have been raised yet.</p></div>
+</main>
+</body></html>

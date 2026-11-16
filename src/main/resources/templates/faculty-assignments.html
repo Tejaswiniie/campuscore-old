@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignments</title>
+<link rel="stylesheet" th:href="@{/style.css}"></head>
+<body>
+<div class="shell">
+  <aside th:replace="~{fragments :: facultySide('assignments')}"></aside>
+  <main class="content">
+    <div class="page-head"><h1>Assignments</h1>
+      <p>Create assignments for the classes you teach. Students see them for their own year and section.</p></div>
+    <p class="notice ok" th:if="${message}" th:text="${message}"></p>
+    <p class="notice error" th:if="${error}" th:text="${error}"></p>
+    <div class="card">
+      <h2>New assignment</h2>
+      <p class="hint" th:if="${#lists.isEmpty(classes)}">You have no classes yet, so you cannot post assignments. Ask the admin to assign a class.</p>
+      <form th:action="@{/faculty/assignments}" th:object="${form}" method="post" class="form">
+        <div class="full"><label for="teachingId">Class (subject and section)</label>
+          <select id="teachingId" th:field="*{teachingId}" required>
+            <option value="">Select a class</option>
+            <option th:each="c : ${classes}" th:value="${c.teaching.id}" th:text="${c.teaching.label}">Subject | Section</option>
+          </select></div>
+        <div><label for="title">Title</label><input id="title" type="text" th:field="*{title}" maxlength="150" required></div>
+        <div><label for="dueDate">Due date</label><input id="dueDate" type="date" th:field="*{dueDate}" required></div>
+        <div class="full"><label for="description">Description</label>
+          <textarea id="description" th:field="*{description}" rows="4" maxlength="2000" required></textarea></div>
+        <div class="full"><button class="btn" type="submit">Post assignment</button></div>
+      </form>
+    </div>
+    <div class="card">
+      <h2>My assignments</h2>
+      <div class="entry" th:each="a : ${list}">
+        <div class="entry-head"><strong th:text="${a.title}">Title</strong>
+          <span class="pill orange">Due <span th:text="${#temporals.format(a.dueDate,'dd MMM yyyy')}">date</span></span></div>
+        <div class="meta" th:text="${a.subject.label} + ' | ' + ${a.section.label}">Class</div>
+        <p class="pre" th:text="${a.description}">Description</p>
+        <div class="actions">
+          <a th:href="@{/faculty/assignments/{id}/edit(id=${a.id})}">Edit</a>
+          <form class="inline" th:action="@{/faculty/assignments/{id}/delete(id=${a.id})}" method="post"
+                onsubmit="return confirm('Delete this assignment?')">
+            <button class="btn-danger" type="submit">Delete</button></form>
+        </div>
+      </div>
+      <p class="hint" th:if="${#lists.isEmpty(list)}">You have not posted any assignments yet.</p>
+    </div>
+  </main>
+</div>
+</body></html>

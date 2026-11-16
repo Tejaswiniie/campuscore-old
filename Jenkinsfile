@@ -1,64 +1,135 @@
+// CampusCore CI/CD pipeline: checkout, build, test, package, Docker image, Kubernetes deploy, verify.
+//
+// Trigger: this file deliberately has NO triggers block. Keep the SCM polling you already configured
+// on the Jenkins job so the pipeline is not polled twice.
+//
+// Tools expected on the Jenkins agent: JDK 21, Maven, Docker, kubectl.
 pipeline {
-  agent any
+    agent any
 
-  parameters {
-    booleanParam(name: 'PUSH_TO_DOCKERHUB', defaultValue: false,
-                 description: 'Also push the image to Docker Hub (needs a "dockerhub" credential)')
-  }
-
-  environment {
-    // Jenkins on macOS often has a short PATH, so add the tool folders explicitly
-    PATH = "/Users/heidi/.docker/bin:/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin:/opt/homebrew/bin:/Applications/apache-maven-3.10.0/bin:${env.PATH}"
-    JAVA_HOME = "/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home"
-    APP = "campuscore"
-  }
-
-  stages {
-    stage('Checkout') {
-      steps { checkout scm }
+    options {
+        disableConcurrentBuilds()      // one build at a time: there is a single H2-backed pod
+        buildDiscarder(logRotator(numToKeepStr: '15'))
     }
 
-    stage('Build') {
-      steps { sh 'mvn -B clean package -DskipTests' }
+    environment {
+        // Jenkins on macOS starts with a short PATH. Adjust these two lines if your tools live elsewhere.
+        PATH = "/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home/bin:/Users/heidi/.docker/bin:/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin:/opt/homebrew/bin:/Applications/apache-maven-3.10.0/bin:${env.PATH}"
+        JAVA_HOME = '/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home'
+        IMAGE_NAME    = 'campuscore'
+        IMAGE_TAG     = "${env.BUILD_NUMBER}"
+        DEPLOYMENT    = 'campuscore'
+        K8S_NAMESPACE = 'default'
+        // Optional. Id of a Jenkins "Secret file" credential that holds a kubeconfig.
+        // Leave empty when the Jenkins user can already run kubectl.
+        KUBECONFIG_CREDENTIALS_ID = ''
+        // Optional. Command that makes the image visible to your cluster, for example:
+        //   minikube:  'minikube image load'      kind:  'kind load docker-image'
+        // Leave empty for Docker Desktop Kubernetes, which shares the local Docker images.
+        IMAGE_LOAD_COMMAND = ''
     }
 
-    stage('Test') {
-      steps { sh 'mvn -B test' }
-      post { always { junit 'target/surefire-reports/*.xml' } }
-    }
-
-    stage('Docker Build') {
-      steps { sh 'docker build -t $APP:$BUILD_NUMBER -t $APP:latest .' }
-    }
-
-    stage('Docker Push') {
-      when { expression { return params.PUSH_TO_DOCKERHUB } }
-      steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub',
-                         usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
-          sh '''
-            echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
-            docker tag $APP:$BUILD_NUMBER $DH_USER/$APP:$BUILD_NUMBER
-            docker push $DH_USER/$APP:$BUILD_NUMBER
-          '''
+    stages {
+        stage('Checkout') {
+            steps {
+                // Uses the repository and branch configured on the Jenkins job.
+                checkout scm
+                script {
+                    env.GIT_SHORT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                }
+                echo "Building commit ${env.GIT_SHORT} as build ${env.BUILD_NUMBER}"
+            }
         }
-      }
+
+        stage('Verify Java and Maven') {
+            steps {
+                sh '''
+                    java -version
+                    mvn -version
+                    java -version 2>&1 | grep -q '"21' || { echo "Java 21 is required"; exit 1; }
+                '''
+            }
+        }
+
+        stage('Clean') {
+            steps { sh 'mvn -B clean' }
+        }
+
+        stage('Compile and Test') {
+            steps { sh 'mvn -B test' }          // fails the build if compilation or any test fails
+            post {
+                always { junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml' }
+            }
+        }
+
+        stage('Package') {
+            steps { sh 'mvn -B package' }       // tests run again here; they are never skipped
+            post {
+                success { archiveArtifacts artifacts: 'target/campuscore.jar', fingerprint: true }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps { sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .' }
+        }
+
+        stage('Tag Docker Image') {
+            steps {
+                sh '''
+                    docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:${GIT_SHORT}
+                    docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
+                    docker images ${IMAGE_NAME}
+                '''
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    if (env.IMAGE_LOAD_COMMAND?.trim()) {
+                        sh '${IMAGE_LOAD_COMMAND} ${IMAGE_NAME}:${IMAGE_TAG}'
+                    }
+                    // Deploy exactly the image built by this run (campuscore:<build number>).
+                    kube '''
+                        kubectl apply -n ${K8S_NAMESPACE} -f k8s/pvc.yaml -f k8s/service.yaml
+                        sed "s|image: campuscore:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" k8s/deployment.yaml \
+                            | kubectl apply -n ${K8S_NAMESPACE} -f -
+                    '''
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                script {
+                    kube '''
+                        kubectl rollout status deployment/${DEPLOYMENT} -n ${K8S_NAMESPACE} --timeout=240s
+                        kubectl get deployments -n ${K8S_NAMESPACE}
+                        kubectl get pods -n ${K8S_NAMESPACE} -l app=campuscore
+                        kubectl get services -n ${K8S_NAMESPACE}
+                        DEPLOYED=$(kubectl get deployment ${DEPLOYMENT} -n ${K8S_NAMESPACE} -o jsonpath='{.spec.template.spec.containers[0].image}')
+                        echo "Deployed image: ${DEPLOYED}"
+                        [ "${DEPLOYED}" = "${IMAGE_NAME}:${IMAGE_TAG}" ] || { echo "Unexpected image deployed"; exit 1; }
+                    '''
+                }
+            }
+        }
     }
 
-    stage('Deploy to Kubernetes') {
-      steps {
-        sh '''
-          kubectl apply -f k8s/
-          kubectl set image deployment/campuscore campuscore=$APP:$BUILD_NUMBER
-          kubectl rollout status deployment/campuscore --timeout=180s
-        '''
-      }
+    post {
+        success { echo "CampusCore ${IMAGE_NAME}:${IMAGE_TAG} is deployed and verified." }
+        failure { echo 'Pipeline failed. Check the stage that turned red; later stages did not run.' }
     }
-  }
+}
 
-  post {
-    success { echo 'Pipeline succeeded: app is deployed.' }
-    failure { echo 'Pipeline failed: check the console output of the failing stage.' }
-    always  { echo "Build ${env.BUILD_NUMBER} finished." }
-  }
+// Runs a shell block with kubectl access: through a stored kubeconfig credential when one is set,
+// otherwise with whatever kubectl access the Jenkins user already has. No secrets appear in this file.
+def kube(String commands) {
+    if (env.KUBECONFIG_CREDENTIALS_ID?.trim()) {
+        withCredentials([file(credentialsId: env.KUBECONFIG_CREDENTIALS_ID, variable: 'KUBECONFIG')]) {
+            sh commands
+        }
+    } else {
+        sh commands
+    }
 }

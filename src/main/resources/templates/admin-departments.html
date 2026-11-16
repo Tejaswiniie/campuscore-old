@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin - Departments</title>
+<link rel="stylesheet" th:href="@{/admin.css}"></head>
+<body>
+<header th:replace="~{fragments :: adminTop('departments')}"></header>
+<main class="wrap">
+  <div class="head"><h1>Departments</h1><p>Pick a department, then its sections, then the students. All counts come from the database.</p></div>
+  <p class="notice ok" th:if="${message}" th:text="${message}"></p>
+  <p class="notice error" th:if="${error}" th:text="${error}"></p>
+  <div class="panel">
+    <h2>All departments</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Code</th><th>Department</th><th>Sections</th><th>Students</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr th:each="r : ${rows}">
+          <td th:text="${r.department.code}"></td>
+          <td><a th:href="@{/admin/departments/{id}(id=${r.department.id})}" th:text="${r.department.name}"></a></td>
+          <td th:text="${r.sectionCount}"></td><td th:text="${r.studentCount}"></td>
+          <td><a th:href="@{/admin/departments/{id}(id=${r.department.id})}">View sections</a>
+</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(rows)}"><td class="empty" colspan="5">No departments found.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</main>
+</body></html>

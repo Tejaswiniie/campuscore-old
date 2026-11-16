@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edit assignment</title>
+<link rel="stylesheet" th:href="@{/style.css}"></head>
+<body>
+<div class="shell">
+  <aside th:replace="~{fragments :: facultySide('assignments')}"></aside>
+  <main class="content">
+    <a class="back" th:href="@{/faculty/assignments}">&larr; Assignments</a>
+    <div class="page-head"><h1>Edit assignment</h1></div>
+    <p class="notice error" th:if="${error}" th:text="${error}"></p>
+    <div class="card">
+      <form th:action="@{/faculty/assignments/{id}/edit(id=${assignmentId})}" th:object="${form}" method="post" class="form">
+        <div class="full"><label for="teachingId">Class (subject and section)</label>
+          <select id="teachingId" th:field="*{teachingId}" required>
+            <option th:each="c : ${classes}" th:value="${c.teaching.id}" th:text="${c.teaching.label}">Subject | Section</option>
+          </select></div>
+        <div><label for="title">Title</label><input id="title" type="text" th:field="*{title}" maxlength="150" required></div>
+        <div><label for="dueDate">Due date</label><input id="dueDate" type="date" th:field="*{dueDate}" required></div>
+        <div class="full"><label for="description">Description</label>
+          <textarea id="description" th:field="*{description}" rows="4" maxlength="2000" required></textarea></div>
+        <div class="full"><button class="btn" type="submit">Save changes</button> <a th:href="@{/faculty/assignments}">Cancel</a></div>
+      </form>
+    </div>
+  </main>
+</div>
+</body></html>

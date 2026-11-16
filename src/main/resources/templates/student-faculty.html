@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faculty and mentors</title>
+<link rel="stylesheet" th:href="@{/style.css}"></head>
+<body>
+<div class="shell">
+  <aside th:replace="~{fragments :: studentSide('faculty')}"></aside>
+  <main class="content">
+    <div class="page-head"><h1>Faculty and mentors</h1>
+      <p>The faculty who teach your section, and the mentors of the ideas you joined.</p></div>
+    <div class="card">
+      <h2>My faculty</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Subject</th><th>Faculty</th><th>Designation</th><th>Department</th></tr></thead>
+        <tbody>
+          <tr th:each="t : ${teachers}">
+            <td th:text="${t.subject.label}"></td><td th:text="${t.faculty.name}"></td>
+            <td th:text="${t.faculty.designation}"></td><td th:text="${t.faculty.departmentName}"></td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(teachers)}"><td class="empty" colspan="4">No faculty have been assigned to your section yet.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <h2>My idea mentors</h2>
+      <div class="entry" th:each="i : ${mentored}">
+        <div class="entry-head"><strong th:text="${i.title}">Idea</strong>
+          <span class="pill green">Mentor: <span th:text="${i.mentorName}">Name</span></span></div>
+      </div>
+      <p class="hint" th:if="${#lists.isEmpty(mentored)}">Join an approved idea in the Idea Hub to see its faculty mentor here.</p>
+    </div>
+  </main>
+</div>
+</body></html>

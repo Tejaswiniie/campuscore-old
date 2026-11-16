@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin - Classes</title>
+<link rel="stylesheet" th:href="@{/admin.css}"></head>
+<body>
+<header th:replace="~{fragments :: adminTop('classes')}"></header>
+<main class="wrap">
+  <div class="head"><h1>Subjects and classes</h1><p>A class is a subject taught by a faculty member to one section. Faculty can only see and manage the classes assigned here.</p></div>
+  <p class="notice ok" th:if="${message}" th:text="${message}"></p>
+  <p class="notice error" th:if="${error}" th:text="${error}"></p>
+  <div class="panel">
+    <h2>Add subject</h2>
+    <form th:action="@{/admin/subjects}" method="post" class="form">
+      <div><label for="scode">Code</label><input id="scode" name="code" type="text" maxlength="30" required></div>
+      <div class="span2"><label for="sname">Subject name</label><input id="sname" name="name" type="text" maxlength="150" required></div>
+      <div><label for="sdept">Department</label>
+        <select id="sdept" name="departmentId" required>
+          <option value="">Select</option>
+          <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.code}">CSE</option>
+        </select></div>
+      <div class="full"><button class="btn" type="submit">Add subject</button></div>
+    </form>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Code</th><th>Subject</th><th>Department</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr th:each="s : ${subjects}">
+          <td th:text="${s.code}"></td><td th:text="${s.name}"></td><td th:text="${s.department.code}"></td>
+          <td><form class="inline" th:action="@{/admin/subjects/{id}/delete(id=${s.id})}" method="post"
+                    onsubmit="return confirm('Delete this subject?')">
+              <button class="btn-danger" type="submit">Delete</button></form></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(subjects)}"><td class="empty" colspan="4">No subjects yet.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="panel">
+    <h2>Assign a class to a faculty member</h2>
+    <form th:action="@{/admin/teaching}" method="post" class="form">
+      <div class="span2"><label for="tfac">Faculty</label>
+        <select id="tfac" name="facultyId" required>
+          <option value="">Select faculty</option>
+          <option th:each="f : ${facultyList}" th:value="${f.facultyId}" th:text="${f.facultyId} + ' - ' + ${f.name}">FAC001 - Name</option>
+        </select></div>
+      <div class="span2"><label for="tsub">Subject</label>
+        <select id="tsub" name="subjectId" required>
+          <option value="">Select subject</option>
+          <option th:each="s : ${subjects}" th:value="${s.id}" th:text="${s.label} + ' (' + ${s.department.code} + ')'">CS201 - Data Structures</option>
+        </select></div>
+      <div class="span2"><label for="tsec">Section</label>
+        <select id="tsec" name="sectionId" required>
+          <option value="">Select section</option>
+          <option th:each="sec : ${sections}" th:value="${sec.id}" th:text="${sec.label}">CSE | Year 2 | Section A</option>
+        </select></div>
+      <div class="full"><button class="btn" type="submit">Assign class</button></div>
+    </form>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Faculty</th><th>Subject</th><th>Section</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr th:each="t : ${teaching}">
+          <td th:text="${t.faculty.facultyId} + ' - ' + ${t.faculty.name}"></td>
+          <td th:text="${t.subject.label}"></td><td th:text="${t.section.label}"></td>
+          <td><form class="inline" th:action="@{/admin/teaching/{id}/delete(id=${t.id})}" method="post"
+                    onsubmit="return confirm('Remove this class? Assignments posted for it are removed too.')">
+              <button class="btn-danger" type="submit">Remove</button></form></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(teaching)}"><td class="empty" colspan="4">No classes assigned yet.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</main>
+</body></html>

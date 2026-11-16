@@ -4,19 +4,18 @@
 <title>Admin Console</title>
 <link rel="stylesheet" th:href="@{/admin.css}"></head>
 <body>
-<header class="topbar"><div class="topbar-in">
-  <a class="brand" th:href="@{/admin}"><span class="mark">C</span><span>CampusCore <b>Admin Console</b><small>(v7)</small></span></a>
-  <nav><a th:href="@{/admin}" class="active">Dashboard</a><a th:href="@{/admin/students}">Students</a><a th:href="@{/admin/faculty}">Faculty</a></nav>
-  <div class="who"><span class="who-name" th:text="${#strings.capitalize(id)}">Admin</span>
-    <form th:action="@{/admin/logout}" method="post"><button class="btn-out" type="submit">Log out</button></form></div>
-</div></header>
+<header th:replace="~{fragments :: adminTop('dashboard')}"></header>
 <main class="wrap">
-  <div class="head"><h1>Dashboard</h1><p>All student and faculty records are created and changed here.</p></div>
+  <div class="head"><h1>Dashboard</h1><p>All student, faculty and academic records are created and changed here.</p></div>
   <div class="stats">
     <a class="stat" th:href="@{/admin/students}"><div class="n" th:text="${studentCount}">0</div>
-      <div class="l">Students registered</div><div class="go">Manage students</div></a>
+      <div class="l">Total students</div><div class="go">Manage students</div></a>
     <a class="stat" th:href="@{/admin/faculty}"><div class="n" th:text="${facultyCount}">0</div>
-      <div class="l">Faculty registered</div><div class="go">Manage faculty</div></a>
+      <div class="l">Total faculty</div><div class="go">Manage faculty</div></a>
+    <a class="stat" th:href="@{/admin/departments}"><div class="n" th:text="${departmentCount}">0</div>
+      <div class="l">Departments</div><div class="go">Departments and sections</div></a>
+    <a class="stat" th:href="@{/admin/complaints}"><div class="n" th:text="${openComplaints}">0</div>
+      <div class="l">Pending complaints</div><div class="go">Read and answer</div></a>
   </div>
 </main>
 </body></html>

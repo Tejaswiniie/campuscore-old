@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignments</title>
+<link rel="stylesheet" th:href="@{/style.css}"></head>
+<body>
+<div class="shell">
+  <aside th:replace="~{fragments :: studentSide('assignments')}"></aside>
+  <main class="content">
+    <div class="page-head"><h1>Assignments</h1>
+      <p>Assignments posted for your own year and section.</p></div>
+    <div class="card">
+      <div class="entry" th:each="a : ${list}">
+        <div class="entry-head"><strong th:text="${a.title}">Title</strong>
+          <span class="pill orange">Due <span th:text="${#temporals.format(a.dueDate,'dd MMM yyyy')}">date</span></span></div>
+        <div class="meta"><span th:text="${a.subject.label}">Subject</span>, posted by
+          <span th:text="${a.faculty.name}">Faculty</span></div>
+        <p class="pre" th:text="${a.description}">Description</p>
+      </div>
+      <p class="hint" th:if="${#lists.isEmpty(list)}">There are no assignments for your section yet.</p>
+    </div>
+  </main>
+</div>
+</body></html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Idea Hub</title>
+<link rel="stylesheet" th:href="@{/style.css}"></head>
+<body>
+<div class="shell">
+  <aside th:replace="~{fragments :: studentSide('ideas')}"></aside>
+  <main class="content">
+    <div class="page-head"><h1>Idea Hub</h1>
+      <p>Post an idea, or join one you like. The final team is decided in person with the mentor.</p></div>
+    <p class="notice ok" th:if="${message}" th:text="${message}"></p>
+    <p class="notice error" th:if="${error}" th:text="${error}"></p>
+    <div class="card">
+      <h2>Post an idea</h2>
+      <form th:action="@{/student/ideas}" method="post" class="form">
+        <div class="full"><label for="title">Title</label>
+          <input id="title" name="title" type="text" maxlength="150" required th:value="${title}"></div>
+        <div class="full"><label for="description">Describe your idea</label>
+          <textarea id="description" name="description" rows="4" maxlength="2000" required th:text="${description}"></textarea></div>
+        <div class="full"><button class="btn" type="submit">Post idea</button></div>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Approved ideas</h2>
+      <div class="entry" th:each="card : ${approved}">
+        <div class="entry-head"><strong th:text="${card.idea.title}">Title</strong>
+          <span class="pill green" th:if="${card.joined}">Joined</span>
+          <form class="inline" th:unless="${card.joined}" th:action="@{/student/ideas/{id}/join(id=${card.idea.id})}" method="post">
+            <button class="btn" type="submit">Join this idea</button></form></div>
+        <div class="meta">Posted by <span th:text="${card.idea.authorName}">Name</span>.
+          <span th:text="${card.memberCount}">1</span> interested.
+          Mentor: <b th:text="${card.idea.mentorName}">Faculty</b></div>
+        <p class="pre" th:text="${card.idea.description}">Description</p>
+        <div class="meta">Interested:
+          <span th:each="m,st : ${card.members}"><span th:text="${m.studentName}">Name</span><span th:unless="${st.last}">, </span></span></div>
+      </div>
+      <p class="hint" th:if="${#lists.isEmpty(approved)}">No approved ideas yet. Approved ideas appear here.</p>
+    </div>
+    <div class="card">
+      <h2>My ideas</h2>
+      <div class="entry" th:each="i : ${mine}">
+        <div class="entry-head"><strong th:text="${i.title}">Title</strong>
+          <span class="pill" th:classappend="${i.status == 'Approved' ? 'green' : (i.status == 'Rejected' ? 'red' : 'orange')}"
+                th:text="${i.status}">Pending</span></div>
+        <div class="meta" th:if="${i.mentorName != null}">Mentor: <b th:text="${i.mentorName}">Faculty</b></div>
+        <p class="pre" th:text="${i.description}">Description</p>
+        <div class="reply" th:if="${i.reason != null}"><strong>Reason</strong><br><span th:text="${i.reason}">Reason</span></div>
+      </div>
+      <p class="hint" th:if="${#lists.isEmpty(mine)}">You have not posted any ideas yet.</p>
+    </div>
+  </main>
+</div>
+</body></html>

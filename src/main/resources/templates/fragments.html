@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+
+<!-- Student sidebar. Usage: th:replace="~{fragments :: studentSide('ideas')}" -->
+<aside class="side" th:fragment="studentSide(active)">
+  <div class="brand"><span class="logo">C</span>
+    <div><strong>CampusCore</strong><small>Student portal</small></div></div>
+  <nav>
+    <a th:href="@{/student}" th:classappend="${active == 'dashboard'} ? 'active' : ''">Dashboard</a>
+    <a th:href="@{/student/assignments}" th:classappend="${active == 'assignments'} ? 'active' : ''">Assignments</a>
+    <a th:href="@{/student/faculty}" th:classappend="${active == 'faculty'} ? 'active' : ''">Faculty and mentors</a>
+    <a th:href="@{/student/ideas}" th:classappend="${active == 'ideas'} ? 'active' : ''">Idea Hub</a>
+    <a th:href="@{/student/complaints}" th:classappend="${active == 'complaints'} ? 'active' : ''">Complaint box</a>
+    <a th:href="@{/student/password}" th:classappend="${active == 'password'} ? 'active' : ''">Change password</a>
+  </nav>
+  <div class="side-foot">
+    <div class="user"><span class="avatar" th:text="${#strings.toUpperCase(#strings.substring(id,0,1))}">U</span>
+      <div><b th:text="${displayName}">User</b><small th:text="${id}">ID</small></div></div>
+    <form th:action="@{/logout}" method="post"><button class="btn-ghost" type="submit">Log out</button></form>
+  </div>
+</aside>
+
+<!-- Faculty sidebar. Usage: th:replace="~{fragments :: facultySide('classes')}" -->
+<aside class="side" th:fragment="facultySide(active)">
+  <div class="brand"><span class="logo">C</span>
+    <div><strong>CampusCore</strong><small>Faculty portal</small></div></div>
+  <nav>
+    <a th:href="@{/faculty}" th:classappend="${active == 'dashboard'} ? 'active' : ''">Dashboard</a>
+    <a th:href="@{/faculty/classes}" th:classappend="${active == 'classes'} ? 'active' : ''">My classes</a>
+    <a th:href="@{/faculty/assignments}" th:classappend="${active == 'assignments'} ? 'active' : ''">Assignments</a>
+    <a th:href="@{/faculty/ideas}" th:classappend="${active == 'ideas'} ? 'active' : ''">Idea Hub</a>
+    <a th:href="@{/faculty/password}" th:classappend="${active == 'password'} ? 'active' : ''">Change password</a>
+  </nav>
+  <div class="side-foot">
+    <div class="user"><span class="avatar" th:text="${#strings.toUpperCase(#strings.substring(id,0,1))}">U</span>
+      <div><b th:text="${displayName}">User</b><small th:text="${id}">ID</small></div></div>
+    <form th:action="@{/logout}" method="post"><button class="btn-ghost" type="submit">Log out</button></form>
+  </div>
+</aside>
+
+<!-- Admin top bar. Usage: th:replace="~{fragments :: adminTop('students')}" -->
+<header class="topbar" th:fragment="adminTop(active)"><div class="topbar-in">
+  <a class="brand" th:href="@{/admin}"><span class="mark">C</span><span>CampusCore <b>Admin Console</b></span></a>
+  <nav>
+    <a th:href="@{/admin}" th:classappend="${active == 'dashboard'} ? 'active' : ''">Dashboard</a>
+    <a th:href="@{/admin/students}" th:classappend="${active == 'students'} ? 'active' : ''">Students</a>
+    <a th:href="@{/admin/faculty}" th:classappend="${active == 'faculty'} ? 'active' : ''">Faculty</a>
+    <a th:href="@{/admin/departments}" th:classappend="${active == 'departments'} ? 'active' : ''">Departments</a>
+    <a th:href="@{/admin/classes}" th:classappend="${active == 'classes'} ? 'active' : ''">Classes</a>
+    <a th:href="@{/admin/complaints}" th:classappend="${active == 'complaints'} ? 'active' : ''">Complaints</a>
+  </nav>
+  <div class="who"><span class="who-name" th:text="${#strings.capitalize(id)}">Admin</span>
+    <form th:action="@{/admin/logout}" method="post"><button class="btn-out" type="submit">Log out</button></form></div>
+</div></header>
+
+</body>
+</html>

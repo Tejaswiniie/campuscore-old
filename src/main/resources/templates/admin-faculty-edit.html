@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin - Edit faculty</title>
+<link rel="stylesheet" th:href="@{/admin.css}"></head>
+<body>
+<header th:replace="~{fragments :: adminTop('faculty')}"></header>
+<main class="wrap">
+  <div class="head"><h1>Edit faculty</h1><p>The faculty ID cannot be changed.</p></div>
+  <p class="notice error" th:if="${error}" th:text="${error}"></p>
+  <div class="panel">
+    <h2>Faculty <span th:text="${facultyId}">ID</span></h2>
+    <form th:action="@{/admin/faculty/{id}/edit(id=${facultyId})}" th:object="${form}" method="post" class="form">
+      <div class="span2"><label for="name">Full name</label><input id="name" type="text" th:field="*{name}" maxlength="100" required></div>
+      <div><label for="departmentId">Department</label>
+        <select id="departmentId" th:field="*{departmentId}" required>
+          <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.code}">CSE</option>
+        </select></div>
+      <div><label for="designation">Designation</label><input id="designation" type="text" th:field="*{designation}" maxlength="100"></div>
+      <div class="full"><button class="btn" type="submit">Save changes</button>
+        <a th:href="@{/admin/faculty}">Cancel</a></div>
+    </form>
+  </div>
+</main>
+</body></html>

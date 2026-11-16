@@ -5,16 +5,7 @@
 <link rel="stylesheet" th:href="@{/style.css}"></head>
 <body>
 <div class="shell">
-  <aside class="side">
-    <div class="brand"><span class="logo">C</span>
-      <div><strong>CampusCore</strong><small>Student portal (v7)</small></div></div>
-    <nav><a class="active" th:href="@{/student}">Dashboard</a></nav>
-    <div class="side-foot">
-      <div class="user"><span class="avatar" th:text="${#strings.toUpperCase(#strings.substring(id,0,1))}">U</span>
-        <div><b th:text="${displayName}">User</b><small th:text="${id}">ID</small></div></div>
-      <form th:action="@{/logout}" method="post"><button class="btn-ghost" type="submit">Log out</button></form>
-    </div>
-  </aside>
+  <aside th:replace="~{fragments :: studentSide('dashboard')}"></aside>
   <main class="content">
     <div class="page-head"><h1>Welcome, <span th:text="${displayName}">student</span></h1>
       <p>Your attendance and academic standing at a glance.</p></div>
@@ -22,10 +13,11 @@
       <h2>Profile</h2>
       <dl class="facts">
         <div><dt>Roll number</dt><dd th:text="${id}"></dd></div>
-        <div><dt>Department</dt><dd th:text="${student.department}"></dd></div>
-        <div><dt>Year</dt><dd th:text="${student.yearOfStudy}"></dd></div>
-        <div><dt>Section</dt><dd th:text="${student.section}"></dd></div>
-        <div><dt>Date of birth</dt><dd th:text="${student.dob}"></dd></div>
+        <div><dt>Name</dt><dd th:text="${student.name}"></dd></div>
+        <div><dt>Department</dt><dd th:text="${student.departmentName}"></dd></div>
+        <div><dt>Year</dt><dd th:text="${student.yearLabel}"></dd></div>
+        <div><dt>Section</dt><dd th:text="${student.sectionName}"></dd></div>
+        <div><dt>Date of birth</dt><dd th:text="${student.dob != null ? student.dob : 'Not added'}"></dd></div>
       </dl>
     </div>
     <div class="card">
@@ -35,13 +27,13 @@
             <span th:text="${#numbers.formatDecimal(attendance,1,0)} + '%'">0%</span></div>
           <span class="pill" th:classappend="${zone}"
                 th:text="${zone == 'green' ? 'Good standing' : (zone == 'orange' ? 'Needs attention' : 'Below required level')}">Status</span>
-          <p class="hint">75% and above is green, 60 to 74% is orange, below 60% is red.</p></div>
+          <p class="hint">75% and above is green, 60 to below 75% is orange, below 60% is red.</p></div>
         <div class="gauge-item"><h3>CGPA</h3>
           <div class="circle" th:classappend="${cgpaZone}" th:style="'--p:' + ${cgpaPercent}">
             <span th:text="${#numbers.formatDecimal(cgpa,1,2)}">0</span></div>
           <span class="pill" th:classappend="${cgpaZone}"
                 th:text="${cgpaZone == 'green' ? 'Strong' : (cgpaZone == 'orange' ? 'Satisfactory' : 'Needs improvement')}">Status</span>
-          <p class="hint">Out of 10. 8 and above is green, 6 to 8 is orange, below 6 is red.</p></div>
+          <p class="hint">Out of 10. 8 and above is green, 6 to below 8 is orange, below 6 is red.</p></div>
       </div>
     </div>
   </main>

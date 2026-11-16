@@ -4,41 +4,45 @@
 <title>Admin - Faculty</title>
 <link rel="stylesheet" th:href="@{/admin.css}"></head>
 <body>
-<header class="topbar"><div class="topbar-in">
-  <a class="brand" th:href="@{/admin}"><span class="mark">C</span><span>CampusCore <b>Admin Console</b><small>(v7)</small></span></a>
-  <nav><a th:href="@{/admin}">Dashboard</a><a th:href="@{/admin/students}">Students</a><a th:href="@{/admin/faculty}" class="active">Faculty</a></nav>
-  <div class="who"><span class="who-name" th:text="${#strings.capitalize(id)}">Admin</span>
-    <form th:action="@{/admin/logout}" method="post"><button class="btn-out" type="submit">Log out</button></form></div>
-</div></header>
+<header th:replace="~{fragments :: adminTop('faculty')}"></header>
 <main class="wrap">
   <div class="head"><h1>Faculty</h1><p>The faculty ID is the login ID and first password.</p></div>
+  <p class="notice ok" th:if="${message}" th:text="${message}"></p>
+  <p class="notice error" th:if="${error}" th:text="${error}"></p>
   <div class="panel">
     <h2>Add faculty</h2>
-    <p class="notice ok" th:if="${message}" th:text="${message}"></p>
-    <p class="notice error" th:if="${error}" th:text="${error}"></p>
-    <form th:action="@{/admin/faculty}" th:object="${faculty}" method="post" class="form">
-      <div><label for="facultyId">Faculty ID</label><input id="facultyId" type="text" th:field="*{facultyId}" required></div>
-      <div class="span2"><label for="name">Full name</label><input id="name" type="text" th:field="*{name}" required></div>
-      <div><label for="department">Department</label><input id="department" type="text" th:field="*{department}"></div>
-      <div class="span2"><label for="designation">Designation</label><input id="designation" type="text" th:field="*{designation}"></div>
-      <div class="span2"><label for="qualifications">Educational qualifications</label><input id="qualifications" type="text" th:field="*{qualifications}"></div>
-      <div class="full"><label for="publications">Publications (optional)</label><input id="publications" type="text" th:field="*{publications}"></div>
+    <p class="meta" th:if="${#lists.isEmpty(departments)}">Create a department first (Departments page).</p>
+    <form th:action="@{/admin/faculty}" th:object="${form}" method="post" class="form">
+      <div><label for="facultyId">Faculty ID</label><input id="facultyId" type="text" th:field="*{facultyId}" maxlength="30" required></div>
+      <div class="span2"><label for="name">Full name</label><input id="name" type="text" th:field="*{name}" maxlength="100" required></div>
+      <div><label for="departmentId">Department</label>
+        <select id="departmentId" th:field="*{departmentId}" required>
+          <option value="">Select</option>
+          <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.code}">CSE</option>
+        </select></div>
+      <div class="span2"><label for="designation">Designation</label><input id="designation" type="text" th:field="*{designation}" maxlength="100"></div>
       <div class="full"><button class="btn" type="submit">Create faculty</button></div>
     </form>
   </div>
   <div class="panel">
     <h2>All faculty</h2>
+    <form th:action="@{/admin/faculty}" method="get" class="search">
+      <input type="text" name="q" th:value="${q}" placeholder="Search by faculty ID or name" aria-label="Search faculty">
+      <button class="btn" type="submit">Search</button>
+      <a th:if="${!#strings.isEmpty(q)}" th:href="@{/admin/faculty}">Clear</a>
+    </form>
     <div class="table-wrap"><table>
-      <thead><tr><th>Faculty ID</th><th>Name</th><th>Department</th><th>Designation</th><th>Qualifications</th><th>Action</th></tr></thead>
+      <thead><tr><th>Faculty ID</th><th>Name</th><th>Department</th><th>Designation</th><th>Actions</th></tr></thead>
       <tbody>
         <tr th:each="f : ${list}">
-          <td th:text="${f.facultyId}"></td><td th:text="${f.name}"></td><td th:text="${f.department}"></td>
-          <td th:text="${f.designation}"></td><td th:text="${f.qualifications}"></td>
-          <td><form class="inline" th:action="@{/admin/faculty/{id}/delete(id=${f.facultyId})}" method="post"
-                    onsubmit="return confirm('Delete this faculty member? Their login is removed too.')">
+          <td th:text="${f.facultyId}"></td><td th:text="${f.name}"></td><td th:text="${f.departmentName}"></td>
+          <td th:text="${f.designation}"></td>
+          <td><a th:href="@{/admin/faculty/{id}/edit(id=${f.facultyId})}">Edit</a>
+            <form class="inline" th:action="@{/admin/faculty/{id}/delete(id=${f.facultyId})}" method="post"
+                  onsubmit="return confirm('Delete this faculty member? Their login, classes and assignments are removed too.')">
               <button class="btn-danger" type="submit">Delete</button></form></td>
         </tr>
-        <tr th:if="${#lists.isEmpty(list)}"><td class="empty" colspan="6">No faculty yet. Use the form above to add the first one.</td></tr>
+        <tr th:if="${#lists.isEmpty(list)}"><td class="empty" colspan="5">No faculty found.</td></tr>
       </tbody>
     </table></div>
   </div>

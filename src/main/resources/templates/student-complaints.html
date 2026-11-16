@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complaint box</title>
+<link rel="stylesheet" th:href="@{/style.css}"></head>
+<body>
+<div class="shell">
+  <aside th:replace="~{fragments :: studentSide('complaints')}"></aside>
+  <main class="content">
+    <div class="page-head"><h1>Complaint box</h1>
+      <p>Tell the administration about a problem. Only you and the admin can see your complaints.</p></div>
+    <div class="card">
+      <h2>New complaint</h2>
+      <p class="notice ok" th:if="${message}" th:text="${message}"></p>
+      <p class="notice error" th:if="${error}" th:text="${error}"></p>
+      <form th:action="@{/student/complaints}" method="post" class="form">
+        <div><label for="category">Category</label>
+          <select id="category" name="category" required>
+            <option th:each="c : ${categories}" th:value="${c}" th:text="${c}" th:selected="${c == category}">Other</option>
+          </select></div>
+        <div><label for="subject">Subject</label>
+          <input id="subject" name="subject" type="text" maxlength="150" required th:value="${subject}"></div>
+        <div class="full"><label for="description">Description</label>
+          <textarea id="description" name="description" rows="5" maxlength="2000" required th:text="${description}"></textarea></div>
+        <div class="full"><button class="btn" type="submit">Submit complaint</button></div>
+      </form>
+    </div>
+    <div class="card">
+      <h2>My complaints</h2>
+      <div class="entry" th:each="c : ${list}">
+        <div class="entry-head"><strong th:text="${c.subject}">Subject</strong>
+          <span class="pill" th:classappend="${c.status == 'Resolved' ? 'green' : (c.status == 'In Review' ? 'blue' : 'orange')}" th:text="${c.status}">Submitted</span></div>
+        <div class="meta"><span th:text="${c.category}">Category</span> on
+          <span th:text="${#temporals.format(c.createdAt,'dd MMM yyyy, HH:mm')}">date</span></div>
+        <p class="pre" th:text="${c.description}">Description</p>
+        <div class="reply" th:if="${c.response != null}"><strong>Reply from the admin</strong><br>
+          <span th:text="${c.response}">Reply</span></div>
+      </div>
+      <p class="hint" th:if="${#lists.isEmpty(list)}">You have not raised any complaints yet.</p>
+    </div>
+  </main>
+</div>
+</body></html>

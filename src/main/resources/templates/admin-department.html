@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin - Sections</title>
+<link rel="stylesheet" th:href="@{/admin.css}"></head>
+<body>
+<header th:replace="~{fragments :: adminTop('departments')}"></header>
+<main class="wrap">
+  <div class="head"><p class="crumbs"><a th:href="@{/admin/departments}">Departments</a> / <span th:text="${department.code}">CSE</span></p>
+    <h1 th:text="${department.name}">Department</h1><p>Sections of this department. Empty sections are listed too.</p></div>
+  <p class="notice ok" th:if="${message}" th:text="${message}"></p>
+  <p class="notice error" th:if="${error}" th:text="${error}"></p>
+  <div class="panel">
+    <h2>Add section</h2>
+    <form th:action="@{/admin/departments/{id}/sections(id=${department.id})}" method="post" class="form">
+      <div><label for="year">Year of study</label>
+        <select id="year" name="year" required>
+          <option value="">Select year</option>
+          <option value="1">1st yr</option><option value="2">2nd yr</option>
+          <option value="3">3rd yr</option><option value="4">4th yr</option>
+        </select></div>
+      <div><label for="sname">Section name</label><input id="sname" name="name" type="text" maxlength="20" placeholder="A" required></div>
+      <div class="full"><button class="btn" type="submit">Add section</button></div>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>Sections</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Year of study</th><th>Section</th><th>Students</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr th:each="r : ${rows}">
+          <td th:text="${r.section.yearLabel}"></td>
+          <td><a th:href="@{/admin/sections/{id}(id=${r.section.id})}" th:text="${r.section.name}"></a></td>
+          <td th:text="${r.studentCount}"></td>
+          <td><a th:href="@{/admin/sections/{id}(id=${r.section.id})}">View students</a>
+            <form class="inline" th:action="@{/admin/sections/{id}/delete(id=${r.section.id})}" method="post"
+                  onsubmit="return confirm('Delete this section?')">
+              <button class="btn-danger" type="submit">Delete</button></form></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(rows)}"><td class="empty" colspan="4">No sections yet. Add the first one above.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</main>
+</body></html>
