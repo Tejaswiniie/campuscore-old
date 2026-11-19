@@ -12,6 +12,12 @@ public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
 
     boolean existsBySubjectId(Long subjectId);
 
+    long countByFacultyFacultyId(String facultyId);
+
+    long countByAttachmentStoredName(String attachmentStoredName);
+
+    List<Assignment> findByFacultyFacultyIdAndSubjectIdAndSectionId(String facultyId, Long subjectId, Long sectionId);
+
     void deleteByFacultyFacultyId(String facultyId);
 
     void deleteByFacultyFacultyIdAndSubjectIdAndSectionId(String facultyId, Long subjectId, Long sectionId);

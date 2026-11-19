@@ -45,7 +45,7 @@ public class SecurityConfig {
     SecurityFilterChain portalChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(a -> a
-                .requestMatchers("/login", "/denied", "/error", "/style.css", "/admin.css",
+                .requestMatchers("/login", "/denied", "/error", "/style.css", "/admin.css", "/student-form.js", "/assignment-form.js",
                                  "/actuator/health", "/actuator/health/**").permitAll()
                 .requestMatchers("/student/**").hasRole("STUDENT")
                 .requestMatchers("/faculty/**").hasRole("FACULTY")

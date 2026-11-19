@@ -8,20 +8,16 @@
   <aside th:replace="~{fragments :: facultySide('classes')}"></aside>
   <main class="content">
     <div class="page-head"><h1>My classes</h1><p>Only the classes assigned to you by the admin are shown.</p></div>
-    <div class="card">
-      <div class="table-wrap"><table>
-        <thead><tr><th>Subject</th><th>Department</th><th>Year</th><th>Section</th><th>Students</th><th></th></tr></thead>
-        <tbody>
-          <tr th:each="c : ${classes}">
-            <td th:text="${c.teaching.subject.label}"></td><td th:text="${c.teaching.section.department.code}"></td>
-            <td th:text="${c.teaching.section.yearLabel}"></td><td th:text="${c.teaching.section.name}"></td>
-            <td th:text="${c.studentCount}"></td>
-            <td><a th:href="@{/faculty/classes/{id}(id=${c.teaching.id})}">View students</a></td>
-          </tr>
-          <tr th:if="${#lists.isEmpty(classes)}"><td class="empty" colspan="6">No classes assigned yet.</td></tr>
-        </tbody>
-      </table></div>
+    <div class="class-grid">
+      <article class="class-card" th:each="c : ${classes}">
+        <h3 th:text="${c.teaching.subject.label}">Subject</h3>
+        <p class="meta"><span th:text="${c.teaching.section.department.code}">CSE</span> &middot;
+          <span th:text="${c.teaching.section.yearLabel}">2nd yr</span> &middot; Section <span th:text="${c.teaching.section.name}">A</span></p>
+        <div class="class-foot"><span><b th:text="${c.studentCount}">0</b> students</span>
+          <a class="btn-small" th:href="@{/faculty/classes/{id}(id=${c.teaching.id})}">View students</a></div>
+      </article>
     </div>
+    <div class="card" th:if="${#lists.isEmpty(classes)}"><p class="empty">No classes assigned yet. Ask the admin to assign you a subject and section.</p></div>
   </main>
 </div>
 </body></html>

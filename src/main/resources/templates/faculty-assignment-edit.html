@@ -7,11 +7,11 @@
 <div class="shell">
   <aside th:replace="~{fragments :: facultySide('assignments')}"></aside>
   <main class="content">
-    <a class="back" th:href="@{/faculty/assignments}">&larr; Assignments</a>
-    <div class="page-head"><h1>Edit assignment</h1></div>
-    <p class="notice error" th:if="${error}" th:text="${error}"></p>
+    <div class="page-head"><h1>Edit assignment</h1><p>Change the details, or replace or remove the attachment.</p></div>
+    <p class="notice error" th:if="${error}" th:text="${error}" role="alert"></p>
     <div class="card">
-      <form th:action="@{/faculty/assignments/{id}/edit(id=${assignmentId})}" th:object="${form}" method="post" class="form">
+      <form th:action="@{/faculty/assignments/{id}/edit(id=${assignmentId})}" th:object="${form}" method="post"
+            enctype="multipart/form-data" class="form">
         <div class="full"><label for="teachingId">Class (subject and section)</label>
           <select id="teachingId" th:field="*{teachingId}" required>
             <option th:each="c : ${classes}" th:value="${c.teaching.id}" th:text="${c.teaching.label}">Subject | Section</option>
@@ -20,9 +20,28 @@
         <div><label for="dueDate">Due date</label><input id="dueDate" type="date" th:field="*{dueDate}" required></div>
         <div class="full"><label for="description">Description</label>
           <textarea id="description" th:field="*{description}" rows="4" maxlength="2000" required></textarea></div>
-        <div class="full"><button class="btn" type="submit">Save changes</button> <a th:href="@{/faculty/assignments}">Cancel</a></div>
+
+        <div class="full"><label>Current attachment</label>
+          <div class="attach" th:if="${assignment != null and assignment.attached}">
+            <span class="chip"><b th:text="${assignment.attachmentOriginalName}">file.pdf</b>
+              <span class="muted" th:text="'(' + ${assignment.attachmentSizeLabel} + ')'">(1 MB)</span></span>
+            <a class="btn-small" th:href="@{/faculty/assignments/{id}/attachment(id=${assignmentId})}">Download</a>
+            <label class="check"><input type="checkbox" name="removeAttachment" value="true"> Remove this attachment</label>
+          </div>
+          <div class="attach" th:unless="${assignment != null and assignment.attached}"><span class="chip none">No attachment</span></div></div>
+
+        <div class="full"><label for="file">Replace attachment (optional)</label>
+          <div class="upload">
+            <input id="file" name="file" type="file" accept=".pdf,.docx,.pptx,.xlsx,.txt"
+                   th:attr="data-max-bytes=${maxUploadBytes}" aria-describedby="file-help file-chosen">
+            <p class="hint" id="file-help">A new file replaces the current one. PDF, DOCX, PPTX, XLSX or TXT, up to <span th:text="${maxUpload}">10 MB</span>.</p>
+            <p class="chosen" id="file-chosen" aria-live="polite"></p>
+          </div></div>
+        <div class="full actions"><button class="btn" type="submit">Save changes</button>
+          <a class="btn-light-dark" th:href="@{/faculty/assignments}">Cancel</a></div>
       </form>
     </div>
   </main>
 </div>
+<script th:src="@{/assignment-form.js}" defer></script>
 </body></html>

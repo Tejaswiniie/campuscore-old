@@ -31,7 +31,8 @@ class StudentDobWebTest {
     @Test @WithMockUser(roles = "ADMIN") void adminAddsADateOfBirthThroughTheForm() throws Exception {
         Section sec = fx.section("DOBW", 2, "A");
         mvc.perform(post("/admin/students").param("rollNo", "DOBW1").param("name", "Dob Student")
-                .param("dob", "2005-08-12").param("sectionId", String.valueOf(sec.getId()))
+                .param("dob", "2005-08-12").param("departmentId", String.valueOf(sec.getDepartment().getId()))
+                .param("yearOfStudy", String.valueOf(sec.getYearOfStudy())).param("sectionId", String.valueOf(sec.getId()))
                 .param("attendance", "81.5").param("cgpa", "7.9").with(csrf()))
             .andExpect(redirectedUrl("/admin/students"));
         assertEquals(LocalDate.of(2005, 8, 12), students.findById("DOBW1").orElseThrow().getDob());

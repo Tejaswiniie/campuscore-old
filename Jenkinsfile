@@ -83,6 +83,28 @@ pipeline {
             }
         }
 
+        stage('Push Docker Image') {
+            // Publishes the image built in this run to Docker Hub. Needs a Jenkins credential with id "dockerhub"
+            // (kind: Username with password; the password is a Docker Hub access token). Nothing secret is in this file.
+            // If the credential is missing or Docker Hub is unreachable, this stage turns red and the build
+            // becomes UNSTABLE (yellow), but the deployment below still runs. Fix the credential and rebuild.
+            steps {
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub',
+                                                      usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
+                        sh '''
+                            echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
+                            docker tag ${IMAGE_NAME}:${IMAGE_TAG} "$DH_USER/${IMAGE_NAME}:${IMAGE_TAG}"
+                            docker tag ${IMAGE_NAME}:${IMAGE_TAG} "$DH_USER/${IMAGE_NAME}:latest"
+                            docker push "$DH_USER/${IMAGE_NAME}:${IMAGE_TAG}"
+                            docker push "$DH_USER/${IMAGE_NAME}:latest"
+                            docker logout
+                        '''
+                    }
+                }
+            }
+        }
+
         stage('Deploy to Kubernetes') {
             steps {
                 script {

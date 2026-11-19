@@ -54,5 +54,19 @@
     <form th:action="@{/admin/logout}" method="post"><button class="btn-out" type="submit">Log out</button></form></div>
 </div></header>
 
+<!-- Progress ring. Usage: th:replace="~{fragments :: ring('CGPA', ${cgpaText}, ${cgpaPercent}, ${cgpaRingZone}, ${cgpaLabel})}" -->
+<div class="ring-item" th:fragment="ring(title, text, percent, zone, label)">
+  <h3 th:text="${title}">Title</h3>
+  <div class="ring" th:classappend="${zone}" role="img" th:attr="aria-label=${title} + ': ' + ${text} + ', ' + ${label}">
+    <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+      <circle class="ring-track" cx="60" cy="60" r="52" pathLength="100"></circle>
+      <circle class="ring-bar" cx="60" cy="60" r="52" pathLength="100" th:if="${percent > 0}"
+              th:attr="stroke-dasharray=${percent} + ' 100'"></circle>
+    </svg>
+    <span class="ring-value" th:text="${text}">0</span>
+  </div>
+  <span class="status" th:classappend="${zone}" th:text="${label}">Status</span>
+</div>
+
 </body>
 </html>

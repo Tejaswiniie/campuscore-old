@@ -1,5 +1,11 @@
 package com.campuscore;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.server.ResponseStatusException;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +34,16 @@ public class StudentPortalController {
         fill(model, auth);
         model.addAttribute("list", assignments.visibleToStudent(auth.getName()));
         return "student-assignments";
+    }
+
+    /** Downloads the attachment of an assignment of the student's own section; anything else is refused with 403. */
+    @GetMapping("/assignments/{id}/attachment")
+    public ResponseEntity<Resource> download(@PathVariable("id") Long id, Authentication auth) {
+        try {
+            return Downloads.of(assignments.attachmentForStudent(auth.getName(), id));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @GetMapping("/faculty")

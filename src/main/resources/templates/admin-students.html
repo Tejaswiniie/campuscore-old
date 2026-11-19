@@ -16,11 +16,23 @@
       <div><label for="rollNo">Roll number</label><input id="rollNo" type="text" th:field="*{rollNo}" maxlength="30" required></div>
       <div class="span2"><label for="name">Full name</label><input id="name" type="text" th:field="*{name}" maxlength="100" required></div>
       <div><label for="dob">Date of birth</label><input id="dob" type="date" th:field="*{dob}"></div>
-      <div class="span2"><label for="sectionId">Section</label>
-        <select id="sectionId" th:field="*{sectionId}" required>
-          <option value="">Select a section</option>
-          <option th:each="sec : ${sections}" th:value="${sec.id}" th:text="${sec.label}">CSE | Year 2 | Section A</option>
+      <div><label for="departmentId">Department</label>
+        <select id="departmentId" th:field="*{departmentId}" required>
+          <option value="">Select department</option>
+          <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.code} + ' - ' + ${d.name}">CSE - Computer Science</option>
         </select></div>
+      <div><label for="yearOfStudy">Academic year</label>
+        <select id="yearOfStudy" th:field="*{yearOfStudy}" required>
+          <option value="">Select year</option>
+          <option th:each="y : ${years}" th:value="${y.key}" th:text="${y.value}">1st Year</option>
+        </select></div>
+      <div><label for="sectionId">Section</label>
+        <select id="sectionId" th:field="*{sectionId}" required th:attr="data-url=@{/admin/section-options}"
+                th:disabled="${#lists.isEmpty(sectionOptions)}">
+          <option value="">Select a section</option>
+          <option th:each="sec : ${sectionOptions}" th:value="${sec.id}" th:text="'Section ' + ${sec.name}">Section A</option>
+        </select>
+        <small id="sectionHint" class="meta" aria-live="polite"></small></div>
       <div><label for="attendance">Attendance (%)</label><input id="attendance" type="number" step="0.01" min="0" max="100" th:field="*{attendance}" required></div>
       <div><label for="cgpa">CGPA (out of 10)</label><input id="cgpa" type="number" step="0.01" min="0" max="10" th:field="*{cgpa}" required></div>
       <div class="full"><button class="btn" type="submit">Create student</button></div>
@@ -50,4 +62,5 @@
     </table></div>
   </div>
 </main>
+<script th:src="@{/student-form.js}" defer></script>
 </body></html>

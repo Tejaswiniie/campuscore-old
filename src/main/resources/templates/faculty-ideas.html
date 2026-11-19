@@ -10,29 +10,36 @@
     <div class="page-head"><h1>Idea Hub</h1>
       <p>Review ideas from students. The final team is decided in person with the mentor.</p></div>
     <p class="notice ok" th:if="${message}" th:text="${message}"></p>
-    <p class="notice error" th:if="${error}" th:text="${error}"></p>
+    <p class="notice error" th:if="${error}" th:text="${error}" role="alert"></p>
+
     <div class="card">
-      <h2>Waiting for review</h2>
+      <div class="card-head"><h2>Waiting for review</h2>
+        <span class="pill orange"><span th:text="${#lists.size(pending)}">0</span> pending</span></div>
       <div class="entry" th:each="i : ${pending}">
-        <div class="entry-head"><strong th:text="${i.title}">Title</strong></div>
-        <div class="meta">Posted by <span th:text="${i.authorName}">Name</span> (<span th:text="${i.studentRoll}">Roll</span>)</div>
+        <div class="entry-head"><strong th:text="${i.title}">Title</strong>
+          <span class="pill orange">Pending review</span></div>
+        <div class="meta">Posted by <b th:text="${i.authorName}">Name</b> (<span th:text="${i.studentRoll}">Roll</span>)
+          on <span th:text="${#temporals.format(i.createdAt,'dd MMM yyyy')}">date</span></div>
         <p class="pre" th:text="${i.description}">Description</p>
         <div class="actions">
           <form class="inline" th:action="@{/faculty/ideas/{id}/approve(id=${i.id})}" method="post">
             <button class="btn" type="submit">Approve</button></form>
           <form class="inline" th:action="@{/faculty/ideas/{id}/reject(id=${i.id})}" method="post">
-            <input type="text" name="reason" maxlength="500" placeholder="Reason (optional)">
+            <label class="sr-only" th:for="'reason' + ${i.id}">Rejection reason</label>
+            <input type="text" name="reason" th:id="'reason' + ${i.id}" maxlength="500" placeholder="Reason for rejecting (optional)">
             <button class="btn-danger" type="submit">Reject</button></form>
         </div>
       </div>
       <p class="hint" th:if="${#lists.isEmpty(pending)}">No ideas are waiting for review.</p>
     </div>
+
     <div class="card">
-      <h2>Approved ideas and interested students</h2>
+      <div class="card-head"><h2>Approved ideas and interested students</h2></div>
       <div class="entry" th:each="card : ${approved}">
         <div class="entry-head"><strong th:text="${card.idea.title}">Title</strong>
           <span class="pill green"><span th:text="${card.memberCount}">1</span> interested</span></div>
-        <div class="meta">Posted by <span th:text="${card.idea.authorName}">Name</span>. Mentor: <b th:text="${card.idea.mentorName}">Faculty</b></div>
+        <div class="meta">Posted by <b th:text="${card.idea.authorName}">Name</b>
+          on <span th:text="${#temporals.format(card.idea.createdAt,'dd MMM yyyy')}">date</span>. Mentor: <b th:text="${card.idea.mentorName}">Faculty</b></div>
         <p class="pre" th:text="${card.idea.description}">Description</p>
         <div class="meta">Interested students:
           <span th:each="m,st : ${card.members}"><span th:text="${m.studentName}">Name</span>

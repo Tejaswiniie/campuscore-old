@@ -9,6 +9,8 @@ public class StudentForm {
     private String name;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dob;
+    private Long departmentId;
+    private Integer yearOfStudy;
     private Long sectionId;
     private Double attendance;
     private Double cgpa;
@@ -19,6 +21,10 @@ public class StudentForm {
     public void setName(String name) { this.name = name; }
     public LocalDate getDob() { return dob; }
     public void setDob(LocalDate dob) { this.dob = dob; }
+    public Long getDepartmentId() { return departmentId; }
+    public void setDepartmentId(Long departmentId) { this.departmentId = departmentId; }
+    public Integer getYearOfStudy() { return yearOfStudy; }
+    public void setYearOfStudy(Integer yearOfStudy) { this.yearOfStudy = yearOfStudy; }
     public Long getSectionId() { return sectionId; }
     public void setSectionId(Long sectionId) { this.sectionId = sectionId; }
     public Double getAttendance() { return attendance; }

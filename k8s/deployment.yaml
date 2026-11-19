@@ -33,6 +33,8 @@ spec:
           env:
             - name: DB_URL
               value: jdbc:h2:file:/data/campuscore
+            - name: UPLOAD_DIR
+              value: /data/uploads
             - name: APP_DEMO_DATA
               value: "false"
             # Create this Secret before the first deploy (see README). Without it the default dev password is used.

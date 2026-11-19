@@ -10,11 +10,13 @@
     <div class="page-head"><h1>Assignments</h1>
       <p>Create assignments for the classes you teach. Students see them for their own year and section.</p></div>
     <p class="notice ok" th:if="${message}" th:text="${message}"></p>
-    <p class="notice error" th:if="${error}" th:text="${error}"></p>
+    <p class="notice error" th:if="${error}" th:text="${error}" role="alert"></p>
+    <p class="notice error" th:if="${param.tooLarge}" role="alert">The file is too large (<span th:text="${maxUpload}">10 MB</span> at most).</p>
+
     <div class="card">
       <h2>New assignment</h2>
       <p class="hint" th:if="${#lists.isEmpty(classes)}">You have no classes yet, so you cannot post assignments. Ask the admin to assign a class.</p>
-      <form th:action="@{/faculty/assignments}" th:object="${form}" method="post" class="form">
+      <form th:action="@{/faculty/assignments}" th:object="${form}" method="post" enctype="multipart/form-data" class="form">
         <div class="full"><label for="teachingId">Class (subject and section)</label>
           <select id="teachingId" th:field="*{teachingId}" required>
             <option value="">Select a class</option>
@@ -24,20 +26,35 @@
         <div><label for="dueDate">Due date</label><input id="dueDate" type="date" th:field="*{dueDate}" required></div>
         <div class="full"><label for="description">Description</label>
           <textarea id="description" th:field="*{description}" rows="4" maxlength="2000" required></textarea></div>
+        <div class="full"><label for="file">Attachment (optional)</label>
+          <div class="upload">
+            <input id="file" name="file" type="file" accept=".pdf,.docx,.pptx,.xlsx,.txt"
+                   th:attr="data-max-bytes=${maxUploadBytes}" aria-describedby="file-help file-chosen">
+            <p class="hint" id="file-help">One file. PDF, DOCX, PPTX, XLSX or TXT, up to <span th:text="${maxUpload}">10 MB</span>.</p>
+            <p class="chosen" id="file-chosen" aria-live="polite"></p>
+          </div></div>
         <div class="full"><button class="btn" type="submit">Post assignment</button></div>
       </form>
     </div>
+
     <div class="card">
       <h2>My assignments</h2>
       <div class="entry" th:each="a : ${list}">
         <div class="entry-head"><strong th:text="${a.title}">Title</strong>
-          <span class="pill orange">Due <span th:text="${#temporals.format(a.dueDate,'dd MMM yyyy')}">date</span></span></div>
+          <span class="pill" th:classappend="${a.overdue} ? 'red' : 'blue'">
+            <span th:text="${a.overdue} ? 'Overdue: ' : 'Due '">Due </span><span th:text="${#temporals.format(a.dueDate,'dd MMM yyyy')}">date</span></span></div>
         <div class="meta" th:text="${a.subject.label} + ' | ' + ${a.section.label}">Class</div>
         <p class="pre" th:text="${a.description}">Description</p>
+        <div class="attach" th:if="${a.attached}">
+          <span class="chip">Attachment <b th:text="${a.attachmentOriginalName}">file.pdf</b>
+            <span class="muted" th:text="'(' + ${a.attachmentSizeLabel} + ')'">(1 MB)</span></span>
+          <a class="btn-small" th:href="@{/faculty/assignments/{id}/attachment(id=${a.id})}">Download</a>
+        </div>
+        <div class="attach" th:unless="${a.attached}"><span class="chip none">No attachment</span></div>
         <div class="actions">
-          <a th:href="@{/faculty/assignments/{id}/edit(id=${a.id})}">Edit</a>
+          <a class="btn-small" th:href="@{/faculty/assignments/{id}/edit(id=${a.id})}">Edit</a>
           <form class="inline" th:action="@{/faculty/assignments/{id}/delete(id=${a.id})}" method="post"
-                onsubmit="return confirm('Delete this assignment?')">
+                onsubmit="return confirm('Delete this assignment and its attachment?')">
             <button class="btn-danger" type="submit">Delete</button></form>
         </div>
       </div>
@@ -45,4 +62,5 @@
     </div>
   </main>
 </div>
+<script th:src="@{/assignment-form.js}" defer></script>
 </body></html>

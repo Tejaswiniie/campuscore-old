@@ -21,12 +21,14 @@ public class AdminService {
     private final ComplaintRepository complaints;
     private final IdeaMemberRepository ideaMembers;
     private final PasswordEncoder encoder;
+    private final AssignmentService assignmentService;
 
     public AdminService(AppUserRepository users, StudentRepository students, FacultyRepository faculty,
                         DepartmentRepository departments, SectionRepository sections,
                         TeachingAssignmentRepository teaching, AssignmentRepository assignments,
                         ComplaintRepository complaints, IdeaMemberRepository ideaMembers,
-                        PasswordEncoder encoder) {
+                        PasswordEncoder encoder, AssignmentService assignmentService) {
+        this.assignmentService = assignmentService;
         this.users = users;
         this.students = students;
         this.faculty = faculty;
@@ -46,6 +48,14 @@ public class AdminService {
         if (dob != null && (dob.isAfter(LocalDate.now()) || dob.getYear() < 1950)) {
             throw new IllegalArgumentException("Enter a valid date of birth.");
         }
+    }
+
+    /** Creates a student after checking that the section belongs to the chosen department and year. */
+    @Transactional
+    public Student createStudent(String rollNo, String name, LocalDate dob, Long departmentId,
+                                 Integer yearOfStudy, Long sectionId, Double attendance, Double cgpa) {
+        checkSectionMatches(departmentId, yearOfStudy, sectionId);
+        return createStudent(rollNo, name, dob, sectionId, attendance, cgpa);
     }
 
     /** Creates a student without a date of birth. */
@@ -72,6 +82,14 @@ public class AdminService {
         Student saved = students.save(s);
         users.save(new AppUser(id, encoder.encode(id), "STUDENT"));
         return saved;
+    }
+
+    /** Updates a student after checking that the section belongs to the chosen department and year. */
+    @Transactional
+    public Student updateStudent(String rollNo, String name, LocalDate dob, Long departmentId,
+                                 Integer yearOfStudy, Long sectionId, Double attendance, Double cgpa) {
+        checkSectionMatches(departmentId, yearOfStudy, sectionId);
+        return updateStudent(rollNo, name, dob, sectionId, attendance, cgpa);
     }
 
     /** Updates a student and keeps the date of birth that is already stored. */
@@ -145,7 +163,7 @@ public class AdminService {
     @Transactional
     public void deleteFaculty(String facultyId) {
         if (faculty.existsById(facultyId)) {
-            assignments.deleteByFacultyFacultyId(facultyId);
+            assignmentService.deleteAllOf(facultyId);
             teaching.deleteByFacultyFacultyId(facultyId);
             faculty.deleteById(facultyId);
             users.deleteById(facultyId);
@@ -177,6 +195,21 @@ public class AdminService {
         String d = clean(designation);
         if (d.length() > 100) throw new IllegalArgumentException("The designation is too long (100 characters at most).");
         return d.isEmpty() ? null : d;
+    }
+
+    /** The server never trusts the drop-downs: the section must belong to the department and year sent with it. */
+    private void checkSectionMatches(Long departmentId, Integer yearOfStudy, Long sectionId) {
+        if (departmentId == null) throw new IllegalArgumentException("Choose a department.");
+        if (yearOfStudy == null || yearOfStudy < 1 || yearOfStudy > 4) {
+            throw new IllegalArgumentException("Choose the academic year (1st to 4th year).");
+        }
+        Section s = requireSection(sectionId);
+        if (!s.getDepartment().getId().equals(departmentId)) {
+            throw new IllegalArgumentException("The selected section does not belong to the selected department.");
+        }
+        if (s.getYearOfStudy() != yearOfStudy) {
+            throw new IllegalArgumentException("The selected section does not belong to the selected academic year.");
+        }
     }
 
     private Section requireSection(Long sectionId) {

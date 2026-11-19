@@ -21,19 +21,10 @@
       </dl>
     </div>
     <div class="card">
-      <div class="gauges">
-        <div class="gauge-item"><h3>Attendance</h3>
-          <div class="circle" th:classappend="${zone}" th:style="'--p:' + ${attendance}">
-            <span th:text="${#numbers.formatDecimal(attendance,1,0)} + '%'">0%</span></div>
-          <span class="pill" th:classappend="${zone}"
-                th:text="${zone == 'green' ? 'Good standing' : (zone == 'orange' ? 'Needs attention' : 'Below required level')}">Status</span>
-          <p class="hint">75% and above is green, 60 to below 75% is orange, below 60% is red.</p></div>
-        <div class="gauge-item"><h3>CGPA</h3>
-          <div class="circle" th:classappend="${cgpaZone}" th:style="'--p:' + ${cgpaPercent}">
-            <span th:text="${#numbers.formatDecimal(cgpa,1,2)}">0</span></div>
-          <span class="pill" th:classappend="${cgpaZone}"
-                th:text="${cgpaZone == 'green' ? 'Strong' : (cgpaZone == 'orange' ? 'Satisfactory' : 'Needs improvement')}">Status</span>
-          <p class="hint">Out of 10. 8 and above is green, 6 to below 8 is orange, below 6 is red.</p></div>
+      <h2>Academic standing</h2>
+      <div class="rings">
+        <div th:replace="~{fragments :: ring('Attendance', ${attendanceText}, ${attendancePercent}, ${attendanceZone}, ${attendanceLabel})}"></div>
+        <div th:replace="~{fragments :: ring('CGPA', ${cgpaText}, ${cgpaPercent}, ${cgpaRingZone}, ${cgpaLabel})}"></div>
       </div>
     </div>
   </main>

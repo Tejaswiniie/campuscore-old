@@ -16,11 +16,13 @@ public class AcademicService {
     private final AssignmentRepository assignments;
     private final StudentRepository students;
     private final FacultyRepository faculty;
+    private final AssignmentService assignmentService;
 
     public AcademicService(DepartmentRepository departments, SectionRepository sections,
                            SubjectRepository subjects, TeachingAssignmentRepository teaching,
                            AssignmentRepository assignments, StudentRepository students,
-                           FacultyRepository faculty) {
+                           FacultyRepository faculty, AssignmentService assignmentService) {
+        this.assignmentService = assignmentService;
         this.departments = departments;
         this.sections = sections;
         this.subjects = subjects;
@@ -113,6 +115,12 @@ public class AcademicService {
         return sections.findById(id).orElseThrow(() -> new IllegalArgumentException("Section not found."));
     }
 
+    /** The sections the admin has registered for one department and one year of study. */
+    public List<Section> sectionsFor(Long departmentId, Integer year) {
+        if (departmentId == null || year == null || year < 1 || year > 4) return List.of();
+        return sections.findByDepartmentIdAndYearOfStudyOrderByNameAsc(departmentId, year);
+    }
+
     public List<Section> allSections() {
         return sections.findAllOrdered();
     }
@@ -195,7 +203,7 @@ public class AcademicService {
     @Transactional
     public void removeTeaching(Long id) {
         TeachingAssignment t = teaching.findById(id).orElseThrow(() -> new IllegalArgumentException("Class not found."));
-        assignments.deleteByFacultyFacultyIdAndSubjectIdAndSectionId(
+        assignmentService.deleteForClass(
             t.getFaculty().getFacultyId(), t.getSubject().getId(), t.getSection().getId());
         teaching.delete(t);
     }

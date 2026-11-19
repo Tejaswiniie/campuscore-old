@@ -52,4 +52,43 @@ public class Assignment {
     public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    // ---- attachment (at most one file per assignment) ----
+    @Column(name = "attachment_original_name", length = 200)
+    private String attachmentOriginalName;
+    @Column(name = "attachment_stored_name", length = 80)
+    private String attachmentStoredName;
+    @Column(name = "attachment_content_type", length = 120)
+    private String attachmentContentType;
+    @Column(name = "attachment_size")
+    private Long attachmentSize;
+    @Column(name = "attachment_uploaded_at")
+    private LocalDateTime attachmentUploadedAt;
+
+    public String getAttachmentOriginalName() { return attachmentOriginalName; }
+    public void setAttachmentOriginalName(String v) { this.attachmentOriginalName = v; }
+    public String getAttachmentStoredName() { return attachmentStoredName; }
+    public void setAttachmentStoredName(String v) { this.attachmentStoredName = v; }
+    public String getAttachmentContentType() { return attachmentContentType; }
+    public void setAttachmentContentType(String v) { this.attachmentContentType = v; }
+    public Long getAttachmentSize() { return attachmentSize; }
+    public void setAttachmentSize(Long v) { this.attachmentSize = v; }
+    public LocalDateTime getAttachmentUploadedAt() { return attachmentUploadedAt; }
+    public void setAttachmentUploadedAt(LocalDateTime v) { this.attachmentUploadedAt = v; }
+
+    public boolean isAttached() {
+        return attachmentStoredName != null && !attachmentStoredName.isBlank();
+    }
+
+    public String getAttachmentSizeLabel() {
+        if (attachmentSize == null) return "";
+        long b = attachmentSize;
+        if (b < 1024) return b + " B";
+        if (b < 1024 * 1024) return (b / 1024) + " KB";
+        return String.format(java.util.Locale.ROOT, "%.1f MB", b / (1024.0 * 1024.0));
+    }
+
+    public boolean isOverdue() {
+        return dueDate != null && dueDate.isBefore(LocalDate.now());
+    }
 }

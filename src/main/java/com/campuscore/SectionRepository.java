@@ -11,6 +11,8 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
     @Query("select s from Section s order by s.department.code, s.yearOfStudy, s.name")
     List<Section> findAllOrdered();
 
+    List<Section> findByDepartmentIdAndYearOfStudyOrderByNameAsc(Long departmentId, int yearOfStudy);
+
     long countByDepartmentId(Long departmentId);
 
     boolean existsByDepartmentId(Long departmentId);

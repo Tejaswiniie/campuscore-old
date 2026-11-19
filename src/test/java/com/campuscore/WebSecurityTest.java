@@ -162,6 +162,7 @@ class WebSecurityTest {
 
     @Test @WithMockUser(roles = "ADMIN") void adminCreatesAStudentThroughTheForm() throws Exception {
         mvc.perform(post("/admin/students").param("rollNo", "WNEW1").param("name", "New Student")
+                .param("departmentId", String.valueOf(section.getDepartment().getId())).param("yearOfStudy", String.valueOf(section.getYearOfStudy()))
                 .param("sectionId", String.valueOf(section.getId())).param("attendance", "81.5").param("cgpa", "7.9")
                 .with(csrf()))
             .andExpect(redirectedUrl("/admin/students"));
@@ -171,6 +172,7 @@ class WebSecurityTest {
 
     @Test @WithMockUser(roles = "ADMIN") void duplicateStudentShowsAnErrorAndCreatesNothingNew() throws Exception {
         mvc.perform(post("/admin/students").param("rollNo", "WS1").param("name", "Again")
+                .param("departmentId", String.valueOf(section.getDepartment().getId())).param("yearOfStudy", String.valueOf(section.getYearOfStudy()))
                 .param("sectionId", String.valueOf(section.getId())).param("attendance", "81").param("cgpa", "7")
                 .with(csrf()))
             .andExpect(status().isOk())

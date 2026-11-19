@@ -46,6 +46,16 @@ public class Section {
         return yearLabel(yearOfStudy);
     }
 
+    /** "1st Year", "2nd Year", "3rd Year", "4th Year" (used in drop-down lists). */
+    public static String yearName(int year) {
+        switch (year) {
+            case 1: return "1st Year";
+            case 2: return "2nd Year";
+            case 3: return "3rd Year";
+            default: return year + "th Year";
+        }
+    }
+
     public static String yearLabel(int year) {
         switch (year) {
             case 1: return "1st yr";

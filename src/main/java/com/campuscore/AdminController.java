@@ -1,5 +1,9 @@
 package com.campuscore;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /** Admin: student and faculty master records (add, view, search, edit, delete). */
@@ -49,7 +54,8 @@ public class AdminController {
         String error = binding.hasErrors() ? "Check the number and date fields." : null;
         if (error == null) {
             try {
-                service.createStudent(form.getRollNo(), form.getName(), form.getDob(), form.getSectionId(),
+                service.createStudent(form.getRollNo(), form.getName(), form.getDob(), form.getDepartmentId(),
+                                      form.getYearOfStudy(), form.getSectionId(),
                                       form.getAttendance(), form.getCgpa());
                 redirect.addFlashAttribute("message", "Student " + form.getRollNo().trim()
                     + " created. The initial password is the roll number.");
@@ -59,6 +65,7 @@ public class AdminController {
             }
         }
         studentPage(model, auth, null);
+        model.addAttribute("sectionOptions", academic.sectionsFor(form.getDepartmentId(), form.getYearOfStudy()));
         model.addAttribute("error", error);
         return "admin-students";
     }
@@ -75,11 +82,13 @@ public class AdminController {
         f.setRollNo(s.getRollNo());
         f.setName(s.getName());
         f.setDob(s.getDob());
+        f.setDepartmentId(s.getSection().getDepartment().getId());
+        f.setYearOfStudy(s.getSection().getYearOfStudy());
         f.setSectionId(s.getSection().getId());
         f.setAttendance(s.getAttendance());
         f.setCgpa(s.getCgpa());
         model.addAttribute("form", f);
-        editStudentPage(model, auth, rollNo);
+        editStudentPage(model, auth, rollNo, f);
         return "admin-student-edit";
     }
 
@@ -90,7 +99,8 @@ public class AdminController {
         String error = binding.hasErrors() ? "Check the number and date fields." : null;
         if (error == null) {
             try {
-                service.updateStudent(rollNo, form.getName(), form.getDob(), form.getSectionId(),
+                service.updateStudent(rollNo, form.getName(), form.getDob(), form.getDepartmentId(),
+                                      form.getYearOfStudy(), form.getSectionId(),
                                       form.getAttendance(), form.getCgpa());
                 redirect.addFlashAttribute("message", "Student " + rollNo + " updated.");
                 return "redirect:/admin/students";
@@ -98,7 +108,7 @@ public class AdminController {
                 error = e.getMessage();
             }
         }
-        editStudentPage(model, auth, rollNo);
+        editStudentPage(model, auth, rollNo, form);
         model.addAttribute("error", error);
         return "admin-student-edit";
     }
@@ -108,6 +118,18 @@ public class AdminController {
         service.deleteStudent(rollNo);
         redirect.addFlashAttribute("message", "Student " + rollNo + " deleted.");
         return "redirect:/admin/students";
+    }
+
+    /** Sections the admin registered for a department and year, as JSON for the student form. Admin only. */
+    @GetMapping("/section-options")
+    @ResponseBody
+    public List<SectionOption> sectionOptions(@RequestParam("departmentId") Long departmentId,
+                                              @RequestParam("year") Integer year) {
+        List<SectionOption> options = new ArrayList<>();
+        for (Section s : academic.sectionsFor(departmentId, year)) {
+            options.add(new SectionOption(s.getId(), s.getName()));
+        }
+        return options;
     }
 
     // ---------- faculty ----------
@@ -189,13 +211,25 @@ public class AdminController {
         String term = q == null ? "" : q.trim();
         model.addAttribute("q", term);
         model.addAttribute("sections", academic.allSections());
+        model.addAttribute("departments", academic.departments());
+        model.addAttribute("years", yearOptions());
+        model.addAttribute("sectionOptions", new ArrayList<Section>());
         model.addAttribute("list", term.isEmpty() ? students.findAllByOrderByRollNoAsc() : students.search(term));
     }
 
-    private void editStudentPage(Model model, Authentication auth, String rollNo) {
+    private void editStudentPage(Model model, Authentication auth, String rollNo, StudentForm form) {
         sidebar(model, auth);
         model.addAttribute("rollNo", rollNo);
-        model.addAttribute("sections", academic.allSections());
+        model.addAttribute("departments", academic.departments());
+        model.addAttribute("years", yearOptions());
+        model.addAttribute("sectionOptions", academic.sectionsFor(form.getDepartmentId(), form.getYearOfStudy()));
+    }
+
+    /** The four fixed academic years. They are not stored anywhere; a section carries its year. */
+    private static Map<Integer, String> yearOptions() {
+        Map<Integer, String> years = new LinkedHashMap<>();
+        for (int y = 1; y <= 4; y++) years.put(y, Section.yearName(y));
+        return years;
     }
 
     private void facultyPage(Model model, Authentication auth, String q) {
